@@ -284,6 +284,20 @@ auroc=function(predictor,Y) {
 	return(-trapz(1-spec,sens))
 }
 
+
+##' @name aucse
+##' @description standard error of AUROC
+##' @param n1 number of 1's/0's
+##' @param n2 number of 0's/1's
+##' @param auc AUROC
+##' @returns estimate of standard error
+aucse=function(n1,n2,auc) {
+  q1=auc/(2-auc); q2=2*(auc^2)/(1+auc)
+  num=auc*(1-auc) + (n1-1)*(q1- (auc^2)) + (n2-1)*(q2-(auc^2))
+  return(sqrt(num/(n1*n2)))
+}
+
+
 ##' @name draw_roc
 ##' @description draws an ROC curve
 ##' @param predictor predictor of response
@@ -298,6 +312,7 @@ draw_roc=function(predictor,Y,add=F,...) {
 		sens[i]=length(which(predictor > sp[i] & Y==1))/n1
 		spec[i]=length(which(predictor <= sp[i] & Y==0))/n0
 	}
+	sens=c(1,sens,0); spec=c(0,spec,1)
 	if (!add) {
 		plot(1-spec,sens,xlim=c(0,1),ylim=c(0,1),type="l",xlab="1-Specificity",ylab="Sensitivity",xaxs="i",yaxs="i",...); 
 		abline(0,1,col="red")

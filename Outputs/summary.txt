@@ -1,0 +1,44 @@
+
+
+ Excluded due to mPap<25 mmHg at baseline: 84
+
+ Excluded due to other reason: 91
+
+ Included total: 1334
+
+ Deaths before followup: 93
+
+ Deaths within 5y: 196
+
+ Survived 5y: 550
+
+ Censored before 5y: 588
+
+ CAMPHOR available at baseline: 1245
+
+ CAMPHOR available at followup: 990
+
+ Mean CAMPHOR at baseline: 34.2722891566265 ( 12.455421686747 11.2771084337349 10.5397590361446 )
+
+ Mean CAMPHOR at followup: 20.1474747474747 ( 6.17373737373737 7.54444444444444 6.42929292929293 )
+
+ Patients with CAMPHOR at baseline but not FU, survived to FU: 195
+
+ Patients with CAMPHOR at baseline but not FU, did not survive to FU: 84
+
+ Overall assessment of fit: 
+
+    pm_noninv      pm_preop  pm_discharge        pm_all    x5m_noninv     x5m_preop x5m_discharge 
+ 7.285104e-15  4.695507e-14  3.163485e-18  1.739187e-25  1.382231e-18  1.803324e-17  2.765453e-22 
+      x5m_all     dq_noninv      dq_preop  dq_discharge        dq_all 
+ 1.011979e-25  2.246709e-43  3.416846e-43  6.101514e-47  9.702057e-87 
+
+
+ Top 10 variables (DM):
+Age 6 min. walk Camph. QOL Camph. act Camph. sympt BMI Plt LA dilatation Ever smoked Smoking Abs. Lym RA area Abs. Mono RDW Com. IHD MCV WBC FEV1/FVC %pred TLCO %pred Hct 8.79 8.39 7.07 6.26 5.76 5.46 4.68 4.58 4 3.71 3.64 3.48 3.46 3.41 3.39 3.21 3.16 3.1 2.95 2.91 Age 6 min. walk CO CI PVR Camph. QOL MPAP Camph. act DPAP SPAP Camph. sympt LA dilatation Plt PCWP BMI Abs. Lym Ever smoked RDW Smoking WBC 6.62 6.36 5.78 5.64 5.56 5.3 5.16 4.91 4.66 4.6 4.12 4.02 3.99 3.78 3.6 3.18 3.12 3.08 3.02 2.9 ICU days Age DHCA mins 6 min. walk Hosp days CI CO Bypass mins. MPAP PVR Plt Camph. QOL Camph. act DPAP SPAP Camph. sympt LA dilatation BMI RDW Smoking 6.25 5.8 5.55 5.36 5.35 5.14 4.88 4.6 4.44 3.99 3.94 3.82 3.69 3.62 3.3 3.17 3.11 3.11 2.86 2.72 NYHA F.U CO F.U PVR F.U MPAP F.U Age CI F.U Camph. sympt F.U Camph. act F.U Camph. QoL F.U 6 min walk F.U LA dilatation DHCA mins PCWP F.U 6 min. walk ICU days SPAP F.U Bypass mins. CO Com. IHD Camph. act 8.92 6.42 6.37 6.35 6.32 4.96 4.75 4.61 4.5 4.16 4.14 3.75 3.47 3.35 3.21 3.18 3.12 3.08 3.06 2.9
+
+ Top 10 variables (5M):
+Age LA dilatation Smoking Ever smoked 6 min. walk Com. IHD On diuretic Com. splenectomy Camph. QOL Com. AF On amio Camph. act NYHA class On Digox Abs. Mono RA area FVC On CCB RDW Urea 0.0174 0.0127 0.0113 0.011 0.00929 0.00751 0.0043 0.00421 0.00415 0.00382 0.00378 0.00348 0.00315 0.00302 0.00272 0.00237 0.0022 0.00216 0.00198 0.00191 Age LA dilatation Ever smoked Smoking 6 min. walk Com. IHD Com. splenectomy Camph. act Com. AF On amio On Digox On diuretic Camph. QOL NYHA class Abs. Mono RDW On CCB FVC RA area Abs. Lym 0.0162 0.0105 0.00962 0.00857 0.00708 0.00649 0.00443 0.0042 0.00389 0.00364 0.00349 0.00308 0.00259 0.00251 0.00215 0.00211 0.00196 0.00155 0.00154 0.0015 Hosp days ICU days Age LA dilatation Ever smoked Smoking 6 min. walk Com. IHD Com. splenectomy On amio Camph. act On diuretic On Digox Com. AF Abs. Mono Add. cardiac. proc Disease L Reperf. inj. RA area On beta-blocker 0.0138 0.0136 0.013 0.00857 0.00669 0.00641 0.00641 0.00356 0.00283 0.0027 0.00264 0.00256 0.00223 0.00219 0.00217 0.00209 0.00187 0.00178 0.00177 0.00162 NYHA F.U Camph. QoL F.U PVR F.U MPAP F.U Camph. sympt F.U 6 min walk F.U Camph. act F.U CO F.U ICU days PCWP F.U Age CI F.U Hosp days LA dilatation Com. IHD DPAP F.U BNP F.U Six min. walk change SPAP F.U Smoking 0.0356 0.0265 0.0265 0.025 0.0245 0.0239 0.0155 0.0137 0.0128 0.0109 0.0105 0.0104 0.00856 0.00501 0.00327 0.00319 0.00235 0.00218 0.00201 0.00151
+
+ Top 10 variables (DC):
+Camph. sympt Camph. QOL Camph. act Age BMI 6 min. walk BSA PRS IBD FEV1/FVC %pred PRS AF WBC Smoking PRS T2D PRS CAD Abs. Lym RA area SPAP FEV1 %pred FVC Hct 39300 27300 17700 10200 9260 8160 8090 4410 3840 3800 3510 3430 3420 3370 3100 2870 2820 2630 2460 2410 Camph. sympt Camph. QOL Camph. act PVR CO Age 6 min. walk BMI MPAP BSA CI SPAP PCWP DPAP PRS IBD FEV1/FVC %pred PRS AF PRS CAD Smoking WBC 37200 24700 16000 8540 7120 6980 6570 6370 6090 5950 5930 5370 5360 5170 3270 3090 2980 2760 2730 2700 Camph. sympt Camph. QOL Camph. act Hosp days PVR BMI CO MPAP DHCA mins 6 min. walk Age CI BSA Bypass mins. SPAP DPAP PCWP ICU days FEV1/FVC %pred WBC 35800 24400 14700 9270 7300 5830 5740 5710 5440 5350 5290 4870 4820 4700 4650 4470 4200 3200 2780 2750 Camph. sympt Camph. QOL Camph. act NYHA F.U 6 min walk F.U Six min. walk change MPAP F.U PVR PVR F.U CI F.U CO F.U Hosp days PCWP F.U Age MPAP SPAP F.U DHCA mins CO DPAP F.U 6 min. walk 34900 20600 16500 15900 14000 8930 5240 4720 4290 4050 3950 3870 3550 3520 3370 3270 3230 3150 3050 3000

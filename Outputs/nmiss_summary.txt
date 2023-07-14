@@ -1,0 +1,44 @@
+
+
+ Excluded due to mPap<25 mmHg at baseline: 84
+
+ Excluded due to other reason: 91
+
+ Included total: 1334
+
+ Deaths before followup: 93
+
+ Deaths within 5y: 196
+
+ Survived 5y: 550
+
+ Censored before 5y: 588
+
+ CAMPHOR available at baseline: 1245
+
+ CAMPHOR available at followup: 990
+
+ Mean CAMPHOR at baseline: 34.2722891566265 ( 12.455421686747 11.2771084337349 10.5397590361446 )
+
+ Mean CAMPHOR at followup: 20.1474747474747 ( 6.17373737373737 7.54444444444444 6.42929292929293 )
+
+ Patients with CAMPHOR at baseline but not FU, survived to FU: 195
+
+ Patients with CAMPHOR at baseline but not FU, did not survive to FU: 84
+
+ Overall assessment of fit: 
+
+    pm_noninv      pm_preop  pm_discharge        pm_all    x5m_noninv     x5m_preop x5m_discharge 
+ 7.766593e-08  1.011769e-06  2.312607e-12  6.634775e-18  4.653980e-20  2.239470e-18  4.783554e-22 
+      x5m_all     dq_noninv      dq_preop  dq_discharge        dq_all 
+ 2.671642e-24  1.277084e-49  1.084618e-50  2.877409e-53  4.730761e-95 
+
+
+ Top 10 variables (DM):
+Age 6 min. walk Camph. QOL Camph. act Camph. sympt BMI Smoking Ever smoked Com. IHD NYHA class Com. chol On diuretic Com. splenectomy Sex Com. any Com. HTN On beta-blocker On vasodilator On CCB On ACEI 20 17.8 15.8 15.1 13.5 12.4 6.86 6.76 5.32 4.76 4.02 3.79 3.72 3.45 2.99 2.97 2.94 2.91 2.68 2.6 Age CI 6 min. walk CO Camph. QOL Camph. act PVR MPAP DPAP SPAP Camph. sympt PCWP BMI Smoking Ever smoked Com. IHD Com. splenectomy NYHA class On diuretic Com. chol 13 11.4 11.2 10.8 9.71 9.52 9.34 8.8 8.78 8.66 7.83 7.15 7.1 4.95 4.36 4.26 2.88 2.65 2.53 2.43 DHCA mins ICU days Age 6 min. walk CO Hosp days CI Bypass mins. Camph. act MPAP Camph. QOL PVR SPAP DPAP Camph. sympt BMI PCWP Smoking Disease R Disease L 9.29 8.84 8.78 8.22 8.14 8.13 7.62 7.3 6.67 6.62 6.6 6.42 5.73 5.66 5.4 4.93 4.34 3.9 3.84 3.82 NYHA F.U Age MPAP F.U CO F.U PVR F.U DHCA mins Camph. sympt F.U Camph. act F.U CI F.U Camph. QOL Bypass mins. CI 6 min. walk SPAP F.U CO Camph. QoL F.U ICU days PCWP F.U 6 min walk F.U Camph. act 9.78 8.41 7.66 7.21 7.17 5.56 5.49 5.24 5.1 4.93 4.83 4.77 4.66 4.54 4.53 4.49 4.46 4.21 4.13 4.04
+
+ Top 10 variables (5M):
+Age Ever smoked Smoking 6 min. walk Com. IHD Camph. act On diuretic On amio Camph. QOL Com. splenectomy NYHA class Com. AF On Digox BMI On CCB On beta-blocker On ACEI Com. HTN Com. solid haem malig Com. chol 0.0243 0.0158 0.0141 0.0139 0.0127 0.00813 0.00695 0.00683 0.00617 0.00582 0.00568 0.00509 0.00447 0.00415 0.00301 0.00236 0.00146 0.00134 0.00115 0.00091 Age 6 min. walk Com. IHD Smoking Ever smoked Camph. act Com. splenectomy Com. AF NYHA class On amio On Digox Camph. QOL CO PCWP On diuretic BMI On CCB CI On beta-blocker MPAP 0.022 0.0124 0.0093 0.00882 0.00874 0.00736 0.00504 0.00496 0.00463 0.00439 0.00425 0.00322 0.00306 0.00292 0.0029 0.00275 0.00267 0.00241 0.00178 0.00149 ICU days Age Hosp days 6 min. walk Com. IHD Ever smoked Smoking Camph. act Com. splenectomy On diuretic Add. cardiac. proc On amio Reperf. inj. BMI Com. AF CI NYHA class On Digox Disease R On CCB 0.0212 0.0167 0.0158 0.00946 0.00679 0.00632 0.00585 0.00415 0.00394 0.00372 0.00346 0.00315 0.00302 0.0029 0.00284 0.00234 0.00225 0.00218 0.00217 0.0021 NYHA F.U MPAP F.U 6 min walk F.U PVR F.U Camph. QoL F.U Camph. sympt F.U CO F.U Camph. act F.U PCWP F.U Age ICU days CI F.U Hosp days Com. IHD DPAP F.U SPAP F.U 6 min. walk Add. cardiac. proc On diuretic Camph. QOL 0.0392 0.0337 0.0319 0.0316 0.0314 0.0305 0.0216 0.0203 0.0163 0.0143 0.0136 0.0131 0.0095 0.00514 0.00389 0.00367 0.00231 0.00218 0.00202 0.00162
+
+ Top 10 variables (DC):
+Camph. sympt Camph. QOL Camph. act 6 min. walk Age BMI Smoking NYHA class Com. chol On diuretic Com. any Ever smoked On vasodilator Sex On ACEI On beta-blocker Com. HTN Com. IHD Com. thyr. Any med. 44200 36700 30200 20200 20100 18700 8890 5480 4140 3960 3820 3640 3510 3300 2740 2650 2410 2360 2350 2330 Camph. sympt Camph. QOL Camph. act PVR Age 6 min. walk CO BMI MPAP CI SPAP PCWP DPAP Smoking NYHA class On diuretic Com. any Com. chol Sex Ever smoked 41500 29100 20700 14500 12500 12300 11700 10700 10600 10500 9790 9460 8880 5500 2900 2500 2490 2420 2080 1960 Camph. sympt Camph. QOL Camph. act Hosp days PVR 6 min. walk CO DHCA mins BMI Age MPAP CI SPAP Bypass mins. PCWP DPAP ICU days Smoking Disease L Disease R 38700 27600 19000 12800 11400 9390 9270 9190 9020 8780 8770 8330 7660 7620 7070 6860 5090 4520 2850 2280 Camph. sympt Camph. QOL Camph. act 6 min walk F.U NYHA F.U PVR MPAP F.U PVR F.U Hosp days CI F.U CO F.U MPAP DPAP F.U Age PCWP F.U SPAP SPAP F.U DHCA mins 6 min. walk CO 35400 25300 20200 17200 17100 7300 7300 6250 6120 6030 5600 5570 5350 5270 5050 5030 4940 4840 4840 4840

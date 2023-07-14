@@ -6,19 +6,14 @@
 ##**********************************************************************
 
 ##**********************************************************************
-## Check location and set data directories                          ####
+## Set data and output directories                                  ####
 ##**********************************************************************
 
-## Working directory: which computer am I on?
-if (file.exists("~/hpc")) loc="med_sshfs" 
-if (file.exists("/rds/project/who1000-1/rds-who1000-cbrc/user/sg550/")) loc="hpc"
-if (file.exists("~/Old/CTEPH/Risk/")) loc="home"
+## Data location
+datadir="../../Data/" 
 
-if (loc=="med_sshfs") setwd("~/hpc/CTEPH/Risk/")
-if (loc=="hpc") setwd("~/CTEPH/Risk/")
-if (loc=="home") setwd("~/Old/CTEPH/Risk/")
-
-datadir="data/" # Data location
+# Output location
+outdir="Outputs/"
 
 
 ##**********************************************************************
@@ -27,25 +22,23 @@ datadir="data/" # Data location
 
 library(snpStats)
 library(matrixStats)
-source("code_new/predictor_lists.R") # Lists of predictors
-source("code_new/auxiliary.R") # Auxiliary functions
+source("Code/predictor_lists.R") # Lists of predictors
+source("Code/auxiliary.R") # Auxiliary functions
 
 
 ##**********************************************************************
 ## Read raw data and pre-format (discovery)                         ####
 ##**********************************************************************
 
-# Old
-# tab=read.csv(paste0(datadir,"old_datasets/LHDmaster17.01.19.csv"),sep=",",stringsAsFactors=FALSE) # raw data
-
-# New
-tab=read.csv(paste0(datadir,"raw_input_datasets/LHDmaster17.04.19.csv"),sep=",",stringsAsFactors=FALSE) # raw data
+# Main dataset
+tab=read.csv(paste0(datadir,"Original/Discovery/LHDmaster17.04.19.csv"),sep=",",stringsAsFactors=FALSE) # raw data
 
 # US data
-t2=read.table("data/raw_input_datasets/PEA_echos_james.csv",header=T,stringsAs=F,sep=",")
+t2=read.table(paste0(datadir,"Original/Discovery/PEA_echos_james.csv"),header=T,stringsAs=F,sep=",")
 tab=cbind(tab,t2[,4:(dim(t2)[2]-1)])
 
-predictor_details=read.table(paste0(datadir,"raw_input_datasets/predictor_details.txt"),stringsAs=F,sep=",") # details of predictors
+# Details of predictors
+predictor_details=read.table(paste0("Reference/predictor_details.txt"),stringsAs=F,sep=",") # details of predictors
 
 
 ##**********************************************************************
@@ -118,11 +111,12 @@ tab$AR=c(2,3,1,1)[as.numeric(factor(t2$AR,levels=c("mild","moderate","none","non
 ##**********************************************************************
 
 
-if (!file.exists(paste0(datadir,"meds_by_patient.RData"))) {
+med_data_file=paste0(datadir,"Temp_data/Working/meds_by_patient.RData")
+if (!file.exists(med_data_file)) {
   
-  rx=read.csv(paste0(datadir,"raw_input_datasets/pea_meds.csv"),header=T,stringsAs=F)
+  rx=read.csv(paste0(datadir,"Original/Discovery/pea_meds.csv"),header=T,stringsAs=F)
   
-  dt=read.csv(paste0(datadir,"raw_input_datasets/drug_type.txt"),stringsAs=F)
+  dt=read.csv(paste0("Reference/drug_type.txt"),stringsAs=F)
   dt[,2]=trimws(dt[,2])
   dtype=unique(dt[,2]); 
   for (i in 1:length(dtype)) if (nchar(trimws(dtype[i]))>0) assign(trimws(dtype[i]),dt[which(dt[,2]==dtype[i]),1])
@@ -145,16 +139,16 @@ if (!file.exists(paste0(datadir,"meds_by_patient.RData"))) {
   }
   
   # Additional vasodilator details
-  vaso=read.csv(paste0(datadir,"raw_input_datasets/pea_vaso_meds.csv"),header=T,stringsAs=F)
+  vaso=read.csv(paste0(datadir,"Original/Discovery/pea_vaso_meds.csv"),header=T,stringsAs=F)
   vaso$med_vasodilator=rep(NA,dim(vaso)[1])
   vaso$med_vasodilator[which(!is.na(vaso[,2]) & (vaso[,2]!="n"))]=1
   vaso$med_vasodilator[which((vaso[,2]=="n"))]=0
   
   outx[match(vaso$HospNo,outx$HospNo),]$med_vasodilator=vaso$med_vasodilator
   
-  save(outx,file=paste0(datadir,"meds_by_patient.RData"))
+  save(outx,file=med_data_file)
   
-} else load(paste0(datadir,"meds_by_patient.RData"))
+} else load(med_data_file)
 
 # affix totab
 tab=cbind(tab,med_diuretic=NA,med_vasodilator=NA,
@@ -177,15 +171,16 @@ tab$any_medication=any_medication
 
 
 ##**********************************************************************
-## Genetics                                                         ####
+## Genetics. Requires plink software on system                      ####
 ##**********************************************************************
 
-# From http://www.broadcvdi.org/informational/data
+# PRSs from http://www.broadcvdi.org/informational/data
 
-if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
+prs_file=paste0(datadir,"Temp_data/PRS/prs_scores.RData")
+if (!file.exists(prs_file)) {
   
   # Genotype location
-  input_loc="../CTEPH_GWAS/ANALYSIS/merge_batches/06-imputed/2017-01-batch123_imputed_plink/assoc_june18/geno_files/2017-01-batch123_imputed_update.info_0.5.maf_0.01"
+  input_loc=paste0(datadir,"Original/Discovery/Genetics/2017-01-batch123_imputed_update.info_0.5.maf_0.01")
   
   # Read fam and bim files
   bimx=read.table(paste0(input_loc,".bim"),stringsAs=F,header=F)
@@ -193,17 +188,17 @@ if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
   
   
   # Get list of samples with genotype ID
-  lk=read.csv(paste0(datadir,"pheno_all_6.csv"),stringsAs=F, header=T)
+  lk=read.csv(paste0(datadir,"Original/Discovery/pheno_all_6.csv"),stringsAs=F, header=T)
   iid=rep("",dim(tab)[1])
   ww=which(tab$HospNo %in% lk$sample_id_4)
   iid[ww]=lk[match(tab$HospNo[ww],lk$sample_id_4),]$IID
   pts=iid[ww]
   
   # Read GRS coefficients
-  afib=read.table("data/prs/afib.txt",skip=10,stringsAs=F,header=T)
-  cad=read.table("data/prs/cad.txt",skip=10,stringsAs=F,header=T)
-  t2d=read.table("data/prs/t2d.txt",skip=10,stringsAs=F,header=T)
-  ibd=read.table("data/prs/ibd.txt",skip=10,stringsAs=F,header=T)
+  afib=read.table("Reference/PRS/afib.txt",skip=10,stringsAs=F,header=T)
+  cad=read.table("Reference/PRS/cad.txt",skip=10,stringsAs=F,header=T)
+  t2d=read.table("Reference/PRS/t2d.txt",skip=10,stringsAs=F,header=T)
+  ibd=read.table("Reference/PRS/ibd.txt",skip=10,stringsAs=F,header=T)
   
   # Indices for GRS coefficients
   afib_id=paste0(afib$chr,":",afib$position); rownames(afib)=afib_id
@@ -224,15 +219,19 @@ if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
   subsnp=intersect(grsnp,bimx[,2])
   subpt_iid=intersect(pts,famx[,2])
   subpt_fid=famx[match(subpt_iid,famx[,2]),1]
-  write(subsnp,file=paste0(datadir,"prs_snps.txt"))
-  write.table(cbind(subpt_fid,subpt_iid),file=paste0(datadir,"prs_pts.txt"),quote=F,row.names=F,col.names=F)
-  system(paste0(
-    "../../software/plink/plink --noweb ",
-    " --bfile ",input_loc,
-    " --extract ./data/prs_snps.txt --keep ./data/prs_pts.txt ",
-    " --recodeA"))
-  system("mv plink.raw data/prs_genotypes.txt")
+  prs_snps_file=paste0(datadir,"Temp_data/PRS/prs_snps.txt"); 
+  write(subsnp,file=prs_snps_file)
   
+  prs_pts_file=paste0(datadir,"Temp_data/PRS/prs_pts.txt")
+  write.table(cbind(subpt_fid,subpt_iid),file=prs_pts_file,quote=F,row.names=F,col.names=F)
+  system(paste0(
+    "plink --noweb ",
+    " --bfile ",input_loc,
+    " --extract ",prs_snps_file," --keep ",prs_pts_file,
+    " --recodeA"))
+  temp_genotypes_file=paste0(datadir,"Temp_data/PRS/prs_genotypes.txt")
+  system(paste0("mv plink.raw ",temp_genotypes_file))
+
   # Read back in
   snpx=read.table(paste0(datadir,"prs_genotypes.txt"),stringsAs=F,header=T)
   ptx=snpx$IID
@@ -287,6 +286,7 @@ if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
   ibd_score= as.matrix(snpx[,mix_ibd]) %*% (coef_ibd*sign_ibd); names(ibd_score)=ptx
   
   
+  prs_details_file=paste0(datadir,"Temp_data/PRS/prs_details.RData")
   save(snpx,ptx,rsnp,ra1,
        coef_afib,sign_afib,
        coef_cad,sign_cad,
@@ -294,9 +294,9 @@ if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
        coef_ibd,sign_ibd,
        ix_afib,ix_cad,ix_t2d,ix_ibd,
        afib_score,cad_score,t2d_score,ibd_score,
-       file=paste0(datadir,"prs_details.RData"))
+       file=prs_details_file)
   
-  lk=read.csv(paste0(datadir,"pheno_all_6.csv"),stringsAs=F, header=T)
+  lk=read.csv(paste0(datadir,"Original/Discovery/pheno_all_6.csv"),stringsAs=F, header=T)
   iid=rep("",dim(tab)[1])
   ww=which(tab$HospNo %in% lk$sample_id_4)
   iid[ww]=lk[match(tab$HospNo[ww],lk$sample_id_4),]$IID
@@ -313,9 +313,9 @@ if (!file.exists(paste0(datadir,"prs_scores.RData"))) {
   prs_t2d[mm]=t2d_score[wxx]
   prs_ibd[mm]=ibd_score[wxx]
   
-  save(iid,prs_afib,prs_cad,prs_t2d,prs_ibd,file=paste0(datadir,"prs_scores.RData"))
+  save(iid,prs_afib,prs_cad,prs_t2d,prs_ibd,file=prs_file)
   
-} else load(paste0(datadir,"prs_scores.RData"))
+} else load(prs_file)
 
 tab$iid=iid
 tab$prs_afib=prs_afib
@@ -376,228 +376,9 @@ colnames(predictor_details)=c("name","short_name","long_name","log_transform")
 ## Save                                                             ####
 ##**********************************************************************
 
-save(tab,tab_raw,predictor_details,predictors,preop_predictors,noninv_predictors,discharge_predictors,file="data/maintable.RData")
+main_table_file=paste0(datadir,"Temp_data/Design/maintable.RData")
+save(tab,tab_raw,predictor_details,predictors,preop_predictors,
+     noninv_predictors,discharge_predictors,
+     file=main_table_file)
 
 
-
-
-
-
-
-
-
-
-
-##**********************************************************************
-## Read raw data and pre-format (validation)                        ####
-##**********************************************************************
-
-vtab=read.csv(paste0(datadir,"prospective/Oct22/pea_prospective_final_anon.csv"),sep=",",stringsAsFactors=FALSE) # raw data
-
-
-##**********************************************************************
-## Basic formatting: must match 'predictors'                        ####
-##**********************************************************************
-
-# Fix NAs
-vtab[which(vtab=="NA")]=NA
-
-variable_differences=rbind(
-  c("body_surface_area","bsa"),
-  c("body_mass_index","BMI"),
-  c("splenectomy_yn","comorbid_splenectomy"),
-  c("diabetes_yn","comorbid_dm"),
-  c("hypertension_yn","comorbid_htn"),
-  c("af_yn","comorbid_af"),
-  c("ihd_yn","comorbid_ihd"),
-  c("dyslipidaemia_yn","comorbid_chol"),
-  c("thyroid_dysfunction_yn","comorbid_thyroid"),
-  c("preop_hct","preop_hematocrit"),
-  c("preop_platelets","preop_platelet"),
-  c("Ca_channelblocker_yn","med_ca_chan_block"),
-  c("Pre_op_vasodilator","med_vasodilator"),
-  c("amiodarone_yn","med_amiodarone"),
-  c("digoxin_yn","med_digoxin"),
-  c("acei_yn","med_acei"),
-  c("b_blocker_yn","med_beta_block"),
-  c("preop_bnp","bnp_bl"),
-  c("preop_nyha","nyha_bl"),
-  c("prep_6mwd","sixmwt_bl"),
-  c("preop_spap","spap"),
-  c("perop_ci","ci_bl"),
-  c("preop_co","co_bl"),
-  c("preop_dpap","dpap_bl"),
-  c("preop_mpap","mpap_bl"),
-  c("preop_spap","spap_bl"),
-  c("preop_pcwp","pcwp_bl"),
-  c("pre_op_pvr","pvr_bl"),
-  c("postop_spap","spap_fu1"),
-  c("postop_dpap","dpap_fu1"),
-  c("postop_mpap","mpap_fu1"),
-  c("postop_pcwp","pcwp_fu1"),
-  c("postop_co","co_fu1"),
-  c("postop_ci","ci_fu1"),
-  c("postop_pvr","pvr_fu1"),
-  c("postop_6mwd","sixmwt_fu1"),
-  c("preop_symptoms","BL.Symptom"),
-  c("preop_activity","BL.Activity"),
-  c("preop_qol","BL.QoL"),
-  c("postop_symptoms","FU.symptom"),
-  c("postop_activity","FU.activity"),
-  c("postop_qol","FU.qol"))
-
-variable_allnas=c(
-  "comorbid_malig_solid_haem","comorbid_malig_solid","haem_malig_yn",
-  "any_comorbidity","preop_mpv","preop_mcv","preop_wbc",
-  "preop_abs_lym","preop_abs_mono","preop_sodium","preop_potassium","preop_creat",
-  "preop_alk_phos", "preop_alb", "preop_bilirubin", "preop_alt", "preop_uric_acid", 
-  "preop_tsh","med_diuretic",  "any_medication","smoking_status", "any_medication", "smoking_status", "ever_smoked", 
-  "bypass_mins", "dhca_min_total", "disease_type_L", "disease_type_R", 
-  "additional_cardiac_procedure", "cabg","pfo", "avr", "mvr", "asd", "icu_days", 
-  "hosp_days", "comp_reperfusion","pft_bl_fev1", "pft_bl_fvc", "pft_bl_fev1pc", 
-  "pft_bl_fvcpc","pft_bl_fev1.fvc_pc", "pa_sats", "max_spo2_bl", "min_spo2_bl", 
-  "tlco_bl_pred.", "afrhythm", "pacedrhythm", "la_bl_dilated", 
-  "rv_dilatation", "rv_systolic_function", "rv_basal_diam", "pa_diam", 
-  "dEI", "sEI", "TAPSE", "TR_max_vel", "FAC", "IVC.diam", "collapse...50.", 
-  "effusion", "LVEF", "E", "A", "E.A", "E.e.av", "E.e.lat", "Lat.e", 
-  "DT", "PAT", "MR", "AS", "AR", "spap_bl", "la_4c_area_bl", "ra_area_bl", 
-  "nyha_fu1", "la_4c_area_fu1", "ra_area_fu1", "bnp_fu1", "sixmwt_delta", 
-  "prs_cad", "prs_t2d", "prs_afib", "prs_ibd"
-)
-
-variable_rm=c(
-  "preop_blood_date","dob","preop_monocytes","preop_6mwd_date","preop_rhc_date",
-  "other_significant_comorbidity_details","Pre.op.pulm.vasodilators","postop_date",
-  "preop_camphor_date","postop_camphor_date"
-)
-
-variable_temprm=c("X","exclusion.reason","surgeon_predicted_mortality_mean",
-                  "Death_date","cause.of.death","pea_date","excluded","centre")
-
-cx=colnames(vtab)
-for (i in 1:dim(variable_differences)[1]) {
-  cx[which(cx==variable_differences[i,1])]=variable_differences[i,2]
-}
-colnames(vtab)=cx
-
-for (i in 1:length(variable_allnas)) {
-  vtab=cbind(vtab,rep(NA,dim(vtab)[1]))
-  colnames(vtab)[length(colnames(vtab))]=variable_allnas[i]
-}
-
-vtab=vtab[,setdiff(colnames(vtab),variable_rm)]
-#vtab=vtab[,setdiff(colnames(vtab),variable_temprm)]
-
-
-recode_yn=c("med_vasodilator", "comorbid_splenectomy", 
-  "comorbid_dm", "comorbid_htn", "comorbid_chol", "comorbid_af", 
-  "comorbid_thyroid", "comorbid_ihd", "med_amiodarone", "med_digoxin", 
-  "med_ca_chan_block", "med_acei", "med_beta_block",
-  "comorbid_malig_solid_haem", "comorbid_malig_solid", 
-  "haem_malig_yn", "any_comorbidity","med_diuretic",
-  "any_medication")
-
-to_numeric=c("preop_platelet", 
-  "bnp_bl", "nyha_bl", "sixmwt_bl", "spap", "dpap_bl", "mpap_bl", 
-  "pcwp_bl", "spap_fu1", "dpap_fu1", "mpap_fu1", "pcwp_fu1", "sixmwt_fu1", 
-  "BL.Symptom", "BL.Activity", "BL.QoL", "FU.symptom", "FU.activity", 
-  "FU.qol",  "preop_mpv", "preop_mcv", 
-  "preop_wbc", "preop_abs_lym", "preop_abs_mono", "preop_sodium", 
-  "preop_potassium", "preop_alb", "preop_bilirubin", "preop_alt", 
-  "any_medication", "smoking_status", "ever_smoked", 
-  "bypass_mins", "dhca_min_total", "disease_type_L", "disease_type_R", 
-  "additional_cardiac_procedure", "cabg", "pfo", "avr", "mvr", 
-  "asd", "icu_days", "hosp_days", "comp_reperfusion", "pft_bl_fev1", 
-  "pft_bl_fvc", "pft_bl_fev1pc", "pft_bl_fvcpc", "pft_bl_fev1.fvc_pc", 
-  "pa_sats", "max_spo2_bl", "min_spo2_bl", "tlco_bl_pred.", "afrhythm", 
-  "pacedrhythm", "la_bl_dilated", "rv_dilatation", "rv_systolic_function", 
-  "rv_basal_diam", "dEI", "sEI", "TAPSE", "IVC.diam", "collapse...50.", 
-  "effusion", "LVEF", "E", "A", "E.A", "E.e.av", "E.e.lat", "Lat.e", 
-  "DT", "PAT", "MR", "AS", "AR", "spap_bl", "la_4c_area_bl", "ra_area_bl", 
-  "nyha_fu1", "la_4c_area_fu1", "ra_area_fu1", "bnp_fu1", "sixmwt_delta", 
-  "prs_cad", "prs_t2d", "prs_afib", "prs_ibd")
-vtab$sex=as.numeric(vtab$sex=="M")
-for (v in 1:length(recode_yn)) 
-  vtab[[recode_yn[v]]]=suppressWarnings(as.numeric(vtab[[recode_yn[v]]] %in% c("y","Y")))
-for (v in 1:length(to_numeric)) 
-  vtab[[to_numeric[v]]]=suppressWarnings(as.numeric(vtab[[to_numeric[v]]]))
-
-vtab0=vtab
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if (FALSE) {
- 
-# Format dates 1
-datex=colnames(vtab)[which(grepl("date",colnames(vtab)))]
-for (i in 1:length(datex)) vtab[,datex[i]]=as.Date(vtab[,datex[i]],"%d/%m/%Y")
-
-
-# Remove useless variables
-vtab=vtab[,setdiff(colnames(tab),c("preop_billirubin","comorbid_malig_comments","X","X.1"))]
-
-# Raw version with text as is
-tab_raw=tab
-
-# Text codings
-tab$sex=as.numeric(tab$sex=="M")
-#tab[,"comorbid_other"]=as.numeric(!is.na(tab[,"comorbid_other"]))
-cmty=c("cabg","pfo","avr","mvr","asd",colnames(tab)[grep("comorbid",colnames(tab))])
-tab[,cmty]=as.numeric(tab[,cmty]=="y"|tab[,cmty]=="Y")
-tab$smoking_status=4-as.numeric(as.factor(tab$smoking_status))
-tab$comp_reperfusion=(tab$comp_reperfusion=="yes")
-tab$death_in_hosp=(tab$death_in_hosp=="Y")
-tab$la_bl_dilated=(tab$la_bl_dilated!="normal")
-
-abl=c("ra_area_bl","ra_area_fu1","la_4c_area_bl","la_4c_area_fu1"); 
-vbl=c("ra_vol_bl","ra_vol_fu1","la_4c_vol_bl","la_4c_vol_fu1")
-
-for (i in 1:4) {
-  
-  ax=abl[i]; vx=vbl[i]
-  
-  nm=which(tab[,ax]=="normal")
-  if (i %in% 1:2) tab[,ax][nm]=c(16.2,15.2)[1+(tab$sex)][nm]
-  if (i %in% 3:4) tab[,ax][nm]=c(22,20)[1+(tab$sex)][nm]
-  suppressWarnings(tab[,ax]<-as.numeric(tab[,ax]))
-  
-  # Substitute right atrial areas
-  yra=tab[,ax]; xra=tab[,vx]; 
-  w1=which(!is.na(xra+yra)); gxx=lm(yra~xra,subset=w1); 
-  Fra=function(x) gxx$coefficients[1] + gxx$coefficients[2]*x
-  wxra=which(is.na(yra) & !is.na(xra))
-  tab[wxra,ax]=Fra(tab[wxra,vx])
-  
-}
-
-# Ultrasound
-tab$afrhythm=as.numeric((tab$rhythmn=="af") + (1-(tab$rhythmn %in% c("sinus","sinu", "sinus "))))
-tab$pacedrhythm=as.numeric((tab$rhythmn=="paced")+ (1-(tab$rhythmn %in% c("sinus","sinu", "sinus "))))
-
-tab$rv_dilatation=as.numeric(c(2,2,3,1,1,4,4)[as.numeric(factor(t2$rv_dilatation,levels=c("mild","mildly","moderate","normal","normal ","secere","severe")))])
-tab$collapse...50.=as.numeric(tab$collapse...50.=="yes")
-tab$effusion=as.numeric(tab$effusion=="yes")
-tab$rv_systolic_function=as.numeric(c(2,3,1,1,4)[as.numeric(factor(t2$rv_systolic_function,levels=c("mild","moderate","noraml","normal","severe")))])
-tab$IVC.diam=suppressWarnings(as.numeric(tab$IVC.diam))
-tab$MR=c(2,3,1,2)[as.numeric(factor(t2$MR,levels=c("mild","moderate","none","trace")))]
-tab$AS=c(2,3,3,1,1)[as.numeric(factor(t2$AS,levels=c("mild","moderare","moderate","none","noen")))]
-tab$AR=c(2,3,1,1)[as.numeric(factor(t2$AR,levels=c("mild","moderate","none","none ")))]
-
-
-
-
-}

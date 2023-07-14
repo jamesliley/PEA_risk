@@ -1,0 +1,144 @@
+age_pea,Age,Age at PEA,0
+bsa,BSA,Body surface area,0
+BMI,BMI,Body mass index,0
+sex,Sex,Sex,0
+comorbid_splenectomy,Com. splenectomy,Previous splenectomy,0
+comorbid_ihd,Com. IHD,Comorbid ischaemic heart disease,0
+comorbid_malig_solid_haem,Com. solid haem malig,Comorbid solid haematological malignancy,0
+comorbid_malig_solid,Com. solid malig,Comorbid solid malignancy,0
+comorbid_malig_type1,Com. type 1 malig,Comorbid malignancy type 1,0
+comorbid_malig_type2,Com. type 2 malig,Comorbid malignancy type 2,0
+comorbid_haem_group,Com. haem. group,Comorbid haematological group,0
+haem_malig_yn,Com. haem. malig,Comorbid haematological malignancy,0
+comorbid_haem_diag,Com. haem. diag,Comorbid haematological diagnosis,0
+comorbid_af,Com. AF,Comorbid atrial fibrillation,0
+comorbid_thyroid,Com. thyr.,Comorbid thyroid abnormality,0
+comorbid_htn,Com. HTN,Comorbid hypertension,0
+comorbid_dm,Com. DM,Comorbid diabetes mellitis,0
+comorbid_chol,Com. chol,Comorbid hypercholesterolaemia,0
+comorbid_other,Com. other,Other significant comorbidity,0
+any_comorbidity,Com. any,Any significant comorbidity,0
+preop_hb,HB,Haemoglobin,0
+preop_hematocrit,Hct,Haematocrit,0
+preop_mcv,MCV,Mean cell volume,0
+preop_rdw,RDW,Red cell distribution width,0
+preop_platelet,Plt,Platelet count,0
+preop_mpv,MPV,Mean platelet volume,0
+preop_wbc,WBC,White blood cell count,0
+preop_abs_neut,Abs. neut,Absolute neutrophil count,0
+preop_abs_lym,Abs. Lym,Absolute lymphocyte count,0
+preop_abs_mono,Abs. Mono,Absolute monocyte count,0
+preop_sodium,Na,Sodium,0
+preop_potassium,K,Potassium,0
+preop_urea,Urea,Urea,0
+preop_creat,Creat,Creatinine,0
+preop_alk_phos,Alk. phos,Alkaline phosphatase,0
+preop_alb,Alb,Albumin,0
+preop_bilirubin,Bili.,Total bilirubin,0
+preop_alt,ALT,Alanine aminotransferase,0
+preop_bnp,BNP,Brain natriuretic peptide,0
+preop_uric_acid,Uric acid,Uric acid,0
+preop_crp,CRP,C-reactive protein,0
+preop_tsh,TSH,Thyroid stimulating hormone,0
+preop_abs_mono_pc,Mono. %,Monocyte percentage,0
+preop_abs_neut_pc,Neut. %,Neutrophil percentage,0
+preop_abs_lym_pc,Lymph. %,Lymphocyte percentage,0
+med_diuretic,On diuretic,On diuretic medicaiton,0
+med_vasodilator,On vasodilator,On vasolidating medication,0
+med_beta_block,On beta-blocker,On beta-blocker medication,0
+med_acei,On ACEI,On ACE inhibitor medication,0
+med_ca_chan_block,On CCB,On calcium channel blocking medication,0
+med_digoxin,On Digox,On digoxin,0
+med_amiodarone,On amio,On amiodarone,0
+any_medication,Any med.,On any medication,0
+smoking_status,Smoking,Smoking status,0
+ever_smoked,Ever smoked,Ever smoked,0
+bypass_mins,Bypass mins.,Total minutes on cardiopulmonary bypass,0
+dhca_min_total,DHCA mins,Total minutes in deep hypothermic cardiac arrest,0
+disease_type_L,Disease L,Disease type in left lung,0
+disease_type_R,Disease R,Disease type in right lung,0
+additional_cardiac_procedure,Add. cardiac. proc,Additional cardiac procedure,0
+cabg,CABG,Concurrent coronary artery bypass graft,0
+pfo,PFO,Concurrent patent foramen ovale repair,0
+avr,AVR,Concurrent atrial valve repair,0
+mvr,MVR,Concurrent mitral valve repair,0
+asd,ASD,Concurrent atrial septal defect repair,0
+icu_days,ICU days,Total days in ICU,0
+hosp_days,Hosp days,Total days in hospital,0
+comp_reperfusion,Reperf. inj.,Complication with reperfusion,0
+pft_bl_fev1,FEV1,Forced expiratory volume in one second,0
+pft_bl_fvc,FVC,Forced vital capacity,0
+pft_bl_fev1.fvc,FEV1/FVC,FEV1/FVC ratio,0
+pft_bl_fev1pc,FEV1 %pred,FEV1 as percentage of predicted,0
+pft_bl_fvcpc,FVC %pred,FVC as percentage of predicted,0
+pft_bl_fev1.fvc_pc,FEV1/FVC %pred,FEV1/FVC ratio as percentage of predicted,0
+la_bl_dilated,LA dilatation,Left atrial dilatation on ultrasound,0
+pcwp_bl,PCWP,Pulmonary capillary wedge pressure,0
+spap_bl,SPAP,Systolic pulmonary arterial pressure,0
+dpap_bl,DPAP,Diastolic pulmonary arterial pressure,0
+mpap_bl,MPAP,Mean pulmonary arterial pressure,0
+tpg_bl,TPG,Transpulmonary pressure gradient,0
+dpg_bl,DPG,Diastolic pressure gradient,0
+co_bl,CO,Cardiac output,0
+ci_bl,CI,Cardiac index,0
+pvr_bl,PVR,Pulmonary vascular resistance,0
+sixmwt_bl,6 min. walk,Six minute walk test,0
+BL.Symptom,Camph. sympt,CAMPHOR score for symptoms,0
+BL.Activity,Camph. act,CAMPHOR score for activity,0
+BL.QoL,Camph. QOL,CAMPHOR score for quality of life,0
+nyha_bl,NYHA class,NYHA functional class,0
+bnp_bl,BNP,Brain natriuretic peptide,0
+pcwp_fu1,PCWP F.U,Pulmonary capillary wedge pressure at followup,0
+spap_fu1,SPAP F.U,Systolic pulmonary arterial pressure at followup,0
+dpap_fu1,DPAP F.U,Diastolic pulmonary arterial pressure at followup,0
+mpap_fu1,MPAP F.U,Mean pulmonary arterial pressure at followup,0
+tpg_fu1,TPG F.U,Transpulmonary pressure gradient at followup,0
+dpg_fu1,DPG F.U,Diastolic pressure gradient at followup,0
+co_fu1,CO F.U,Cardiac output at followup,0
+ci_fu1,CI F.U,Cardiac index at followup,0
+pvr_fu1,PVR F.U,Pulmonary vascular resistance at followup,0
+sixmwt_fu1,6 min walk F.U,Six-minute walk test at followup,0
+FU.symptom,Camph. sympt F.U,CAMPHOR score for symptoms at followup,0
+FU.activity,Camph. act F.U,CAMPHOR score for activity at followup,0
+FU.qol,Camph. QoL F.U,CAMPHOR score for quality of life at followup,0
+nyha_fu1,NYHA F.U,NYHA functional class at followup,0
+bnp_fu1,BNP F.U,Brain natriuretic peptide at followup,0
+sixmwt_delta,Six min. walk change,Change in six-minute walk distance,0
+pvr_change,PVR change,Change in pulmonary vascular resistance,0
+prs_cad,PRS CAD,Genetic risk score for coronary artery disease,0
+prs_t2d,PRS T2D,Genetic risk score for type 2 diabetes,0
+prs_afib,PRS AF,Genetic risk score for atrial fibrillation,0
+prs_ibd,PRS IBD,Genetic risk score for inflammatory bowel disease,0
+pa_sats,PA Sats.,Pulmonary artery oxygen saturation,0
+max_spo2_bl,Max. SpO2,Maximum oxygen saturation,0
+min_spo2_bl,Min. SpO2,Minimum oxygen saturation,0
+tlco_bl_pred.,TLCO %pred,Transfer factor for CO percentage predicted,0
+la_4c_area_bl,LA area,Left atrial area,0
+ra_area_bl,RA area, Right atrial area,0
+afrhythm,AF ultr., Atrial fibrillation during ultrasound,0
+pacedrhythm,Paced ultr., Paced rhythm during ultrasound,0
+rv_dilatation,RV dilit, Right ventricular dilatation,0
+rv_systolic_function,RV sys func, Right ventricular systolic function,0
+rv_basal_diam,RV basal diam, Right ventricular basal diameter,0
+pa_diam,PA diameter, Main Pulmonary Artery Diameter,0
+spap,SPAP,Systolic pulmonary arterial pressure,0
+dEI,dEI, Diastolic eccentricity index,0
+sEI,sEI, Systolic eccentricity index,0
+TAPSE,TAPSE,Tricuspid annular plane systolic excursion,0
+TR_max_vel, Tricusp. regurg. max v, Tricuspid Regurgitation maximum velocity,0
+FAC, RV frac. area change, Right venticle fractional area change,0
+IVC.diam,IVC diam, Inferior vena cava diameter,0
+collapse...50., IVC collapse, IVC collapse more than 50 percent,0
+effusion, Pleur. or pericard. effusion,Pleural or pericardial effusion,0
+LVEF,LVEF, Left ventricular ejection fraction,0
+E,Mitr. E veloc., Mitral E velocity,0
+A,Mitr. A veloc.,  Mitral A velocity,0
+E.A, Mitr. E/A,Mitral E/A ratio,0
+E.e.av,LV E/e avg, Left ventricular E/e average,0
+E.e.lat,LV E/e lat, Left ventricular E/e lateral,0
+Lat.e, LV lat e, Left venticular lateral e,0
+DT, MV decel. time, Mitral valve deceleration time,0
+PAT, PV accel. time, Pulmonary valve acceleration time,0
+MR,Mitr. R, Mitral regurgitation severity,0
+AS,Aort. S, Aortic stenosis severity,0
+AR,Aort. R, Aortic regurgitation severity,0
