@@ -158,7 +158,7 @@ legend("bottomright",
                 " (",signif(ci_mod[1],digits=2),", ", signif(ci_mod[2],digits=2),")"),
          paste0("Surgeon-predicted: ",signif(auc_surg,digits=2),
                   " (",signif(ci_surg[1],digits=2),", ", signif(ci_surg[2],digits=2),")")),
-       col=c("black","red"),lwd=2,bty="n")
+       col=c("black","red"),lwd=2,bty="n",cex=0.5)
 
 dev.off()
 
@@ -169,7 +169,7 @@ plot(0,type="n",xlim=c(0,0.5),ylim=c(0,1.1),xlab="Predicted risk",ylab="Observed
 abline(0,1)
 draw_calibration(Ypv,Yv,nc=20,type="l",add=T,col="black",lwd=2)
 draw_calibration(Yc/100,Yv,nc=20,type="l",add=T,col="red",lwd=2)
-legend("bottomright",c("Model_derived","Surgeon-predicted"),lwd=2,col=c("black","red"))
+legend("topright",c("Model_derived","Surgeon-predicted"),lwd=2,col=c("black","red"),cex=0.5)
 dev.off()
 
 sink()

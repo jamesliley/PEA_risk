@@ -52,7 +52,7 @@ library(glmnet)
 library(randomForest)
 library(snpStats)
 library(survival)
-library(randomForestSRC) # Version 
+library(randomForestSRC) # Version 2.6.0
 library(pec)
 library(penalized)
 library(cvAUC)
@@ -527,7 +527,7 @@ tab_pm=cbind(tab_pm,c(ccn,ccp,ccd,cca))
 rownames(tab_pm)=c("NONINV","PREOP","DISCHARGE","ALL")
 colnames(tab_pm)=c("Linear","Lasso","RF")
 
-save(tab_pm,file=paste0(outdir,"Tables/",prefix,"table_pm.RData"))
+write.csv(tab_pm,file=paste0(outdir,"Tables/",prefix,"table_pm.csv"),quote=T)
 
 
 
@@ -680,7 +680,7 @@ tab_5m=cbind(tab_5m,c(ccn,ccp,ccd,cca))
 rownames(tab_5m)=c("NONINV","PREOP","DISCHARGE","ALL")
 colnames(tab_5m)=c("Linear","Lasso","RF")
 
-save(tab_5m,file=paste0(outdir,"Tables/",prefix,"table_5m.RData"))
+write.csv(tab_5m,file=paste0(outdir,"Tables/",prefix,"table_5m.csv"),quote=TRUE)
 
 
 
@@ -838,7 +838,7 @@ tab_dc=cbind(tab_dc,c(ccn,ccp,ccd,cca))
 rownames(tab_dc)=c("NONINV","PREOP","DISCHARGE","ALL")
 colnames(tab_dc)=c("Linear","Lasso","RF")
 
-save(tab_dc,file=paste0(outdir,"Tables/",prefix,"table_dc.RData"))
+write.csv(tab_dc,file=paste0(outdir,"Tables/",prefix,"table_dc.csv"),quote=TRUE)
 
 
 
