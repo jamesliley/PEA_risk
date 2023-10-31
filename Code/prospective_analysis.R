@@ -45,6 +45,120 @@ vtab0=vtab
 # Discovery
 load(paste0(datadir,"Temp_data/Workspaces/discovery.RData"))
 
+##**********************************************************************
+## Sample size calculation setup                                    ####
+##**********************************************************************
+
+# Training data
+Y=YDM
+train_dat=cbind(Xall,Y=as.factor(Y))
+
+
+nrs=c(50,500) # Maximum and minimum sizes to test
+nsim=100 # Simulate this many times
+
+# Store simulation data in a list
+sim_data=list()
+
+
+##**********************************************************************
+## Sample size calculation                                          ####
+##**********************************************************************
+
+# Random seed
+set.seed(3625362)
+
+# Function to run test for one potential sample size
+test_n=function(nr,verbose=TRUE) {
+  
+  npoll=rep(NA,nsim)
+  for (ss in 1:nsim) {
+    
+    # Take bootstrap sample 
+    sboot=sample(1:dim(train_dat)[1],nr,rep=TRUE);
+    cboot=setdiff(1:dim(train_dat)[1],sboot)
+    
+    # Simulated validation data and discovery data
+    sim_val=train_dat[sboot,]
+    sim_disc=train_dat[cboot,]
+    
+    # Variables with missingness in simulated validation sample <0.5
+    nm_val=apply(sim_val,2,function(x) length(which(is.na(x))))/dim(sim_val)[1]
+    subm_val=colnames(sim_val)[which(nm_val < 0.5)]
+    
+    # Intersection with pre-operative predictors
+    xcol=intersect(intersect(subm_val,colnames(Xall)),preop_predictors)
+    
+    # Mean-value impute (according to original dataset)
+    for (i in 1:ncol(sim_val)) {
+      if (colnames(sim_val)[i] %in% names(mtab)) {
+        sim_val[which(is.na(sim_val[,i])),i]=mtab[colnames(sim_val)[i]]
+        sim_disc[which(is.na(sim_disc[,i])),i]=mtab[colnames(sim_disc)[i]]
+      }
+    }
+    
+    # Restrict to available predictors
+    sim_val=sim_val[,c(xcol,"Y")]
+    sim_disc=sim_disc[,c(xcol,"Y")]
+    
+    # Fit RF
+    nt=round(dim(sim_disc)[1]/2)
+    m_sim=randomForest(Y~.,data=sim_disc)
+    
+    # Predictions on simulated validation sample
+    Ypred_sim=predict(m_sim,sim_val,type="prob")[,1]
+    
+    # Wilcoxon test - does the model perform better than randomly?
+    if (length(which(sim_val$Y==1))>5) {
+      wt_sim=wilcox.test(Ypred_sim[which(sim_val$Y==1)],Ypred_sim[which(sim_val$Y==0)])
+      npoll[ss]=wt_sim$p.value
+    } else npoll[ss]=1
+    
+    if (verbose) print(paste0("Completed ",ss," of ",nsim," trials."))
+    
+  }
+  if (verbose) print(paste0("Power estimated at sample size: ",nr," is ",mean(npoll<0.05)))
+  return(npoll)
+}
+
+
+
+# Run bisection method to find sample size for 90% power
+sim_file="Reference/simdata_pea_risk.RData"
+
+if (!file.exists(sim_file)) {
+  power_threshold=0.9
+  lower=nrs[1]
+  upper=nrs[2]
+  p_lower=test_n(lower)
+  p_upper=test_n(upper)
+  nx=c(lower,upper)
+  sim_data[[1]]=p_lower
+  sim_data[[2]]=p_upper
+  s_index=3
+  while(upper-lower > 1) {
+    xmid=round((upper + lower)/2)
+    pmid=test_n(xmid)
+    xp=mean(pmid<0.05)
+    if (xp < power_threshold) lower=xmid else upper=xmid
+    sim_data[[s_index]]=pmid
+    nx[s_index]=xmid
+    s_index=s_index+1
+  }
+  
+  # Save
+  names(sim_data)=nx
+  save(sim_data,file=sim_file)
+  
+} else load(sim_file)
+
+# Print
+cat("\n\n\n")
+print (paste0("A sample size of ",names(sim_data)[length(sim_data)]," is sufficient to have ",
+              round(power_threshold*100), "% power to reject the null hypothesis that prediction ",
+              "of YDM from the discovery dataset is no better than random, assuming that individuals ",
+              "in a prospective validation sample had identical distributions of covariates"))
+cat("\n\n\n")
 
 
 ##**********************************************************************
