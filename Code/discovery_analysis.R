@@ -52,7 +52,7 @@ library(glmnet)
 library(randomForest)
 library(snpStats)
 library(survival)
-library(randomForestSRC) # Version 2.6.0
+library(randomForestSRC) # Version 2.8.0
 library(pec)
 library(penalized)
 library(cvAUC)
@@ -174,7 +174,9 @@ randomise=F
 # Traits to be predicted
 YDM=tab$Dead_before_followup # More powerful than in-hospital death/30 day mortality
 Y5M=tab$surv_days_max5yrs_census; Y5M_time=tab$surv_days_max5yrs
-YDC=(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL) - (tab$FU.activity  +tab$FU.symptom + tab$FU.qol); wm=which(tab$Dead_before_followup>0); YDC[wm]=(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL)[wm] - max(tab$FU.activity  + tab$FU.symptom + tab$FU.qol)
+YDC=(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL) - (tab$FU.activity  +tab$FU.symptom + tab$FU.qol); 
+#wm=which(tab$Dead_before_followup>0); 
+#YDC[wm]=(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL)[wm] - max(tab$FU.activity  + tab$FU.symptom + tab$FU.qol,na.rm=TRUE)
 
 if (randomise) {
   YDM=YDM[order(runif(length(YDM)))]
@@ -412,8 +414,7 @@ if (!file.exists(ydm_name) | (force_redo_dm|force_redo_all)) {
 } else load(ydm_name)
 
 
-
-# plot each outcome as ROC curve
+# Plot each outcome as ROC curve and save table at optimum Youden index
 # LM
 pdf(paste0(outdir,"Plots/",prefix,"dm_lr.pdf"),width=4,height=4)
 plot(0,type="n",xlim=c(0,1),ylim=c(0,1),xlab="1-Specificity",ylab="Sensitivity",xaxs="i",yaxs="i")
@@ -427,7 +428,6 @@ legend("bottomright",c("Noninv.","Preop.","Discharge"),lty=1,col=2:4)
 dev.off()
 
 
-
 # Lasso
 pdf(paste0(outdir,"Plots/",prefix,"dm_lasso.pdf"),width=4,height=4)
 plot(0,type="n",xlim=c(0,1),ylim=c(0,1),xlab="1-Specificity",ylab="Sensitivity",xaxs="i",yaxs="i")
@@ -439,6 +439,8 @@ abline(0,1)
 #legend("bottomright",c("Noninv.","Preop.","Discharge","All"),lty=1,col=2:5)
 legend("bottomright",c("Noninv.","Preop.","Discharge"),lty=1,col=2:4)
 dev.off()
+
+
 
 # RF
 pdf(paste0(outdir,"Plots/",prefix,"dm_rf.pdf"),width=4,height=4)
@@ -454,16 +456,33 @@ dev.off()
 
 
 
+# Save contingency tables to file
+sink(paste0(outdir,"Tables/",prefix,"dm_contingency.txt"))
+
+# Write contingency tables
+opt_threshold(logistic(Ypred_noninv_dm_lrproc),Y,fold2,printh="LR on dataset NONINV for outcome DM")
+opt_threshold(logistic(Ypred_preop_dm_lrproc),Y,fold2,printh="LR on dataset PREOP for outcome DM")
+opt_threshold(logistic(Ypred_discharge_dm_lrproc),Y,fold2,printh="LR on dataset DISCHARGE for outcome DM")
+
+opt_threshold(logistic(Ypred_noninv_dm_lassoproc),Y,fold2,printh="Lasso on dataset NONINV for outcome DM")
+opt_threshold(logistic(Ypred_preop_dm_lassoproc),Y,fold2,printh="Lasso on dataset PREOP for outcome DM")
+opt_threshold(logistic(Ypred_discharge_dm_lassoproc),Y,fold2,printh="Lasso on dataset DISCHARGE for outcome DM")
+
+opt_threshold(Ypred_noninv_dm_rfproc,Y,fold2,printh="RF on dataset NONINV for outcome DM")
+opt_threshold(Ypred_preop_dm_rfproc,Y,fold2,printh="RF on dataset PREOP for outcome DM")
+opt_threshold(Ypred_discharge_dm_rfproc,Y,fold2,printh="RF on dataset DISCHARGE for outcome DM")
+
+sink()
 
 
 # plot calibrations
 # LM
 pdf(paste0(outdir,"Plots/",prefix,"dm_lr_calibration.pdf"),width=4,height=4)
 plot(0,type="n",xlim=c(0,1.1),ylim=c(0,1.1),xlab="Predicted risk",ylab="Observed risk",xaxs="i",yaxs="i")
-draw_calibration(logit(Ypred_noninv_dm_lrproc),Y,type="l",add=T,col=2)
-draw_calibration(logit(Ypred_preop_dm_lrproc),Y,type="l",add=T,col=3)
-draw_calibration(logit(Ypred_discharge_dm_lrproc),Y,type="l",add=T,col=4)
-#draw_calibration(logit(Ypred_all_dm_lrproc),Y,type="l",add=T,col=5)
+draw_calibration(logistic(Ypred_noninv_dm_lrproc),Y,type="l",add=T,col=2)
+draw_calibration(logistic(Ypred_preop_dm_lrproc),Y,type="l",add=T,col=3)
+draw_calibration(logistic(Ypred_discharge_dm_lrproc),Y,type="l",add=T,col=4)
+#draw_calibration(logistic(Ypred_all_dm_lrproc),Y,type="l",add=T,col=5)
 abline(0,1)
 #legend("bottomright",c("Noninv.","Preop.","Discharge","All"),lty=1,col=2:5)
 legend("bottomright",c("Noninv.","Preop.","Discharge"),lty=1,col=2:4)
@@ -472,10 +491,10 @@ dev.off()
 # Lasso
 pdf(paste0(outdir,"Plots/",prefix,"dm_lasso_calibration.pdf"),width=4,height=4)
 plot(0,type="n",xlim=c(0,1.1),ylim=c(0,1.1),xlab="Predicted risk",ylab="Observed risk",xaxs="i",yaxs="i")
-draw_calibration(logit(Ypred_noninv_dm_lassoproc),Y,type="l",add=T,col=2)
-draw_calibration(logit(Ypred_preop_dm_lassoproc),Y,type="l",add=T,col=3)
-draw_calibration(logit(Ypred_discharge_dm_lassoproc),Y,type="l",add=T,col=4)
-#draw_calibration(logit(Ypred_all_dm_lassoproc),Y,type="l",add=T,col=5)
+draw_calibration(logistic(Ypred_noninv_dm_lassoproc),Y,type="l",add=T,col=2)
+draw_calibration(logistic(Ypred_preop_dm_lassoproc),Y,type="l",add=T,col=3)
+draw_calibration(logistic(Ypred_discharge_dm_lassoproc),Y,type="l",add=T,col=4)
+#draw_calibration(logistic(Ypred_all_dm_lassoproc),Y,type="l",add=T,col=5)
 abline(0,1)
 #legend("bottomright",c("Noninv.","Preop.","Discharge","All"),lty=1,col=2:5)
 legend("bottomright",c("Noninv.","Preop.","Discharge"),lty=1,col=2:4)
@@ -599,13 +618,28 @@ if (!file.exists(y5m_name) | (force_redo_5m|force_redo_all)) {
     
   }
   
-  save(Ypred_noninv_5m_lrproc_surv, Ypred_noninv_5m_lassoproc_surv, Ypred_noninv_5m_rfproc_surv, Ypred_preop_5m_lrproc_surv, Ypred_preop_5m_lassoproc_surv, Ypred_preop_5m_rfproc_surv, Ypred_discharge_5m_lrproc_surv, Ypred_discharge_5m_lassoproc_surv, Ypred_discharge_5m_rfproc_surv, Ypred_all_5m_lrproc_surv, Ypred_all_5m_lassoproc_surv, Ypred_all_5m_rfproc_surv,sepred_noninv_5m_lrproc_surv, sepred_noninv_5m_lassoproc_surv, sepred_noninv_5m_rfproc_surv, sepred_preop_5m_lrproc_surv, sepred_preop_5m_lassoproc_surv, sepred_preop_5m_rfproc_surv, sepred_discharge_5m_lrproc_surv, sepred_discharge_5m_lassoproc_surv, sepred_discharge_5m_rfproc_surv, sepred_all_5m_lrproc_surv, sepred_all_5m_lassoproc_surv, sepred_all_5m_rfproc_surv,best_noninv_5m,best_preop_5m,best_discharge_5m,best_all_5m,fold=fold2,ydif,file=y5m_name)
+  save(Ypred_noninv_5m_lrproc_surv, Ypred_noninv_5m_lassoproc_surv, 
+       Ypred_noninv_5m_rfproc_surv, Ypred_preop_5m_lrproc_surv, 
+       Ypred_preop_5m_lassoproc_surv, Ypred_preop_5m_rfproc_surv, 
+       Ypred_discharge_5m_lrproc_surv, Ypred_discharge_5m_lassoproc_surv, 
+       Ypred_discharge_5m_rfproc_surv, Ypred_all_5m_lrproc_surv, 
+       Ypred_all_5m_lassoproc_surv, Ypred_all_5m_rfproc_surv,
+       sepred_noninv_5m_lrproc_surv, sepred_noninv_5m_lassoproc_surv, 
+       sepred_noninv_5m_rfproc_surv, sepred_preop_5m_lrproc_surv, 
+       sepred_preop_5m_lassoproc_surv, sepred_preop_5m_rfproc_surv, 
+       sepred_discharge_5m_lrproc_surv, sepred_discharge_5m_lassoproc_surv, 
+       sepred_discharge_5m_rfproc_surv, sepred_all_5m_lrproc_surv, 
+       sepred_all_5m_lassoproc_surv, sepred_all_5m_rfproc_surv,
+       best_noninv_5m,best_preop_5m,best_discharge_5m,
+       best_all_5m,fold=fold2,ydif,file=y5m_name)
   
 } else load(y5m_name)
 
 
-# plot each outcome as time-dependent ROC curve
 
+
+
+# plot each outcome as time-dependent ROC curve
 tx=1826 # one-year survival 
 
 pdf(paste0(outdir,"Plots/",prefix,"x5m_lr.pdf"),width=4,height=4)
@@ -639,6 +673,23 @@ legend("bottomright",c("Noninv.","Preop.","Discharge","All"),lty=1,col=2:5)
 dev.off()
 
 
+# Save contingency tables to file
+sink(paste0(outdir,"Tables/",prefix,"x5m_contingency.txt"))
+
+# Write contingency tables 
+opt_threshold_surv(Ypred_noninv_5m_lrproc_surv,Y,Yt,tx,fold2,printh="LR on dataset NONINV for outcome 5M")
+opt_threshold_surv(Ypred_preop_5m_lrproc_surv,Y,Yt,tx,fold2,printh="LR on dataset PREOP for outcome 5M")
+opt_threshold_surv(Ypred_discharge_5m_lrproc_surv,Y,Yt,tx,fold2,printh="LR on dataset DISCHARGE for outcome 5M")
+
+opt_threshold_surv(Ypred_noninv_5m_lassoproc_surv,Y,Yt,tx,fold2,printh="Lasso on dataset NONINV for outcome 5M")
+opt_threshold_surv(Ypred_preop_5m_lassoproc_surv,Y,Yt,tx,fold2,printh="Lasso on dataset PREOP for outcome 5M")
+opt_threshold_surv(Ypred_discharge_5m_lassoproc_surv,Y,Yt,tx,fold2,printh="Lasso on dataset DISCHARGE for outcome 5M")
+
+opt_threshold_surv(Ypred_noninv_5m_rfproc_surv,Y,Yt,tx,fold2,printh="RF on dataset NONINV for outcome 5M")
+opt_threshold_surv(Ypred_preop_5m_rfproc_surv,Y,Yt,tx,fold2,printh="RF on dataset PREOP for outcome 5M")
+opt_threshold_surv(Ypred_discharge_5m_rfproc_surv,Y,Yt,tx,fold2,printh="RF on dataset DISCHARGE for outcome 5M")
+
+sink()
 
 
 # Save AUCs and confidence intervals as table
@@ -797,6 +848,25 @@ dev.off()
 
 
 
+
+
+# Save contingency tables to file
+sink(paste0(outdir,"Tables/",prefix,"dc_contingency.txt"))
+
+# Write contingency tables
+opt_threshold(logistic(Ypred_noninv_dc_lrproc),Y>0,fold2,printh="LR on dataset NONINV for outcome DC > 0")
+opt_threshold(logistic(Ypred_preop_dc_lrproc),Y>0,fold2,printh="LR on dataset PREOP for outcome DC > 0")
+opt_threshold(logistic(Ypred_discharge_dc_lrproc),Y>0,fold2,printh="LR on dataset DISCHARGE for outcome DC > 0")
+
+opt_threshold(logistic(Ypred_noninv_dc_lassoproc),Y>0,fold2,printh="Lasso on dataset NONINV for outcome DC > 0")
+opt_threshold(logistic(Ypred_preop_dc_lassoproc),Y>0,fold2,printh="Lasso on dataset PREOP for outcome DC > 0")
+opt_threshold(logistic(Ypred_discharge_dc_lassoproc),Y>0,fold2,printh="Lasso on dataset DISCHARGE for outcome DC > 0")
+
+opt_threshold(Ypred_noninv_dc_rfproc,Y>0,fold2,printh="RF on dataset NONINV for outcome DC > 0")
+opt_threshold(Ypred_preop_dc_rfproc,Y>0,fold2,printh="RF on dataset PREOP for outcome DC > 0")
+opt_threshold(Ypred_discharge_dc_rfproc,Y>0,fold2,printh="RF on dataset DISCHARGE for outcome DC > 0")
+
+sink()
 
 
 # Save AUCs and confidence intervals as table

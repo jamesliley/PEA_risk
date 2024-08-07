@@ -150,7 +150,10 @@ if (!file.exists(sim_file)) {
   names(sim_data)=nx
   save(sim_data,file=sim_file)
   
-} else load(sim_file)
+} else {
+  load(sim_file)
+  power_threshold=0.9
+}
 
 # Print
 cat("\n\n\n")
@@ -174,9 +177,21 @@ vtab=vtab[-w,]
 Yc=Yc[-w]
 
 # Establish time since PEA, if died.
-ds=(as.Date(vtab$Death_date,format="%d/%m/%Y") - as.Date(vtab$pea_date,format="%d/%m/%Y"))
+ds=(as.Date(vtab$death_date_update,format="%d/%m/%Y") - as.Date(vtab$pea_date,format="%d/%m/%Y"))
 ds[which(!is.finite(ds))]=500
-Yv=(ds<35) # Died <35 days after PEA
+Yv=(ds<90) # Died <90 days after PEA
+
+
+# Survival and censoring times
+deathdate=(as.Date(vtab$death_date_update,format="%d/%m/%Y"))
+peadate=as.Date(vtab$pea_date,format="%d/%m/%Y")
+ds=deathdate - peadate
+ev=rep(1,length(ds))
+w=which(is.na(ds))
+ds[w]=max(deathdate,na.rm=TRUE)-peadate[w]
+ev[w]=0
+Yv5=ev; Yv5t=ds
+
 
 # Find number of missing values per column, and remove variables with  missingness > 0.5
 nm=apply(vtab,2,function(x) length(which(is.na(x))))/dim(vtab)[1]
@@ -200,7 +215,7 @@ Xsub=Xall[,xcol]
 
 
 ##**********************************************************************
-## Train model to original data using available variables           ####
+## Train model to original data using available variables (DM)      ####
 ##**********************************************************************
 
 Y=YDM
@@ -219,7 +234,7 @@ rt=roc(Yt,Ypt)
 
 
 ##**********************************************************************
-## Compute and compare AUCs of model vs surgeon prediction          ####
+## Compute and compare AUCs of model vs surgeon prediction (DM)     ####
 ##**********************************************************************
 
 # Predictions on prospective data
@@ -255,7 +270,7 @@ ci_surg=auc_surg - qnorm(0.05/2)*se_surg*c(-1,1)
 
 
 ##**********************************************************************
-## Plot ROC and calibration curves                                  ####
+## Plot ROC and calibration curves (DM)                             ####
 ##**********************************************************************
 
 
@@ -286,7 +301,131 @@ draw_calibration(Yc/100,Yv,nc=20,type="l",add=T,col="red",lwd=2)
 legend("topright",c("Model_derived","Surgeon-predicted"),lwd=2,col=c("black","red"),cex=0.5)
 dev.off()
 
+
+
+
+##**********************************************************************
+## Train model to original data using available variables (5M)      ####
+##**********************************************************************
+
+Y=Y5M;
+Yt=Y5M_time
+w1=which(!is.na(Y+Yt))
+Y=Y[w1]; Yt=Yt[w1]
+tx=1826 # one-year survival 
+
+
+train_dat_surv=cbind(Xsub,Y,Yt)
+nt=round(dim(train_dat_surv)[1]/2)
+train=1:nt; test=(nt+1):dim(train_dat)[1]
+m1s=rfsrc(Surv(time=Yt,event=Y)~.,data=train_dat_surv[train,],block.size=1)
+m2s=rfsrc(Surv(time=Yt,event=Y)~.,data=train_dat_surv,block.size=1)
+
+Yxs=Y[test]; Ytxs=Yt[test]
+Ypts=predict(m1s,newdata=train_dat_surv[test,])$predicted
+
+# Internal ROC for model prediction
+rts=risksetROC(Stime=Ytxs,status=Yxs,marker=Ypts,predict.time=tx,plot=F)
+
+
+
+
+##**********************************************************************
+## Compute and compare AUCs of model vs surgeon prediction (5M)     ####
+##**********************************************************************
+
+# Predictions on prospective data
+Ypvs=predict(m2s,vtab)$predicted
+
+
+# ROC for model on prospective data
+rv_surv=risksetROC(Stime=Yv5t,status=Yv5,marker=Ypvs,predict.time=tx,plot=F)
+
+# ROC for surgical prediction on prospective data
+rvc_surv=risksetROC(Stime=Yv5t,status=Yv5,marker=Yc,predict.time=tx,plot=F)
+
+
+# Comparison of whether prediction is better than random in each case
+randfile="Reference/prospective_predvrandom_5ym.RData"
+if (!file.exists(randfile)) {
+  rand_concordance_mod=rep(NA,50000); 
+  rand_concordance_surg=rep(NA,50000); 
+  for (i in 1:length(rand_concordance)) {
+    set.seed(i+2394203)
+    rand_concordance_mod[i]=concordance(Surv(Yv5t,Yv5)~sample(Ypvs))$concordance
+    rand_concordance_surg[i]=concordance(Surv(Yv5t,Yv5)~sample(Yc))$concordance
+  }
+  save(rand_concordance_mod,rand_concordance_surg,file=randfile)
+} else load(randfile)
+
+mod_concordance=(concordance(Surv(Yv5t,Yv5)~Ypvs)) # or 1-survConcordance(Surv(Yv5t,Yv5)~Ypvs)$concordance
+mc=1-mod_concordance$concordance; vc=mod_concordance$var
+mod_ci=mc + c(1,-1)*qnorm(0.05/2)*sqrt(vc)
+p_mod_concordance=2*max(c(1/length(rand_concordance_mod),min(ecdf(rand_concordance_mod)(c(mc,1-mc)))))
+cat("\n\n",paste0("Concordance for model prediction on prospective data: ",signif(mc,digits=3),
+    " (",signif(mod_ci[1],digits=3),",",signif(mod_ci[2],digits=3),
+    "); p-value: ≤",signif(p_mod_concordance,digits=3)))
+
+
+surg_concordance=(concordance(Surv(Yv5t,Yv5)~Ypvs)) # or 1-survConcordance(Surv(Yv5t,Yv5)~Ypvs)$concordance
+mc=1-surg_concordance$concordance; vc=surg_concordance$var
+surg_ci=mc + c(1,-1)*qnorm(0.05/2)*sqrt(vc)
+p_surg_concordance=2*max(c(1/length(cx),min(ecdf(rand_concordance_surg)(c(mc,1-mc)))))
+cat("\n\n",paste0("Concordance for surgical prediction on prospective data: ",signif(mc,digits=3),
+                  " (",signif(surg_ci[1],digits=3),",",signif(surg_ci[2],digits=3),
+                  "); p-value: ≤",signif(p_surg_concordance,digits=3)))
+
+
+cat("\n\n","Wilcoxon rank-sum test comparing model-derived predictions for individuals who died <1y post-PEA with predictions for individuals who did not (excluding individuals censored after <1y)\n")
+print(wilcox.test(Ypvs[which(Yv5t>tx)],Ypvs[which(Yv5t<tx & Yv5==1)]))
+
+cat("\n\n","Wilcoxon rank-sum test comparing surgeon-estimated predictions for individuals who died <1y post-PEA with predictions for individuals who did not (excluding individuals censored after <1y)\n")
+print(wilcox.test(Yc[which(Yv5t>tx)],Yc[which(Yv5t<tx & Yv5==1)]))
+
+cat("\n\n","Permutation test comparing area-under-ROC curve using model-derived predictions and using surgeon-derived predictions\n")
+Ypvs_trial=se_auc_surv(Yv5,Yv5t,Ypvs,ntrial=1000,time=tx)
+Yc_trial=se_auc_surv(Yv5,Yv5t,Yc,ntrial=1000,time=tx)
+roc_test_surv(rv_surv$AUC,rvc_surv$AUC,Ypvs_trial,Yc_trial,time=tx)
+
+
+## AUCs, standard errors and confidence intervals
+auc_mod_surv=rv_surv$AUC
+se_mod_surv=sd(Ypvs_trial)
+ci_mod_surv=auc_mod_surv - qnorm(0.05/2)*se_mod_surv*c(-1,1)
+
+auc_surg_surv=rvc_surv$AUC
+se_surg_surv=sd(Yc_trial)
+ci_surg_surv=auc_surg_surv - qnorm(0.05/2)*se_surg_surv*c(-1,1)
+
+
+##**********************************************************************
+## Plot ROC and calibration curves (5M)                             ####
+##**********************************************************************
+
+
+# ROC
+pdf(paste0(outdir,"Plots/",prefix,"prospective_roc_surg_vs_mod_surv5M.pdf"),width=4,height=4)
+
+plot(0,type="n",xlim=c(0,1),ylim=c(0,1),
+     xlab="Specificity",ylab="Sensitivity")
+abline(0,1,lty=2)
+draw_roc_surv(Ypvs,Yv5,Yv5t,time=tx,add=T,col="black",lwd=2)
+draw_roc_surv(Yc,Yv5,Yv5t,time=tx,add=T,col="red",lwd=2)
+legend("bottomright",
+       c(paste0("Model-derived: ",signif(auc_mod_surv,digits=2),
+                " (",signif(ci_mod_surv[1],digits=2),", ", signif(ci_mod_surv[2],digits=2),")"),
+         paste0("Surgeon-predicted: ",signif(auc_surg_surv,digits=2),
+                " (",signif(ci_surg_surv[1],digits=2),", ", signif(ci_surg_surv[2],digits=2),")")),
+       col=c("black","red"),lwd=2,bty="n",cex=0.5)
+
+dev.off()
+
 sink()
+
+
+
+
+
 
 
 ##**********************************************************************

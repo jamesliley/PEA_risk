@@ -54,7 +54,7 @@ lr_coefficients=cx$coefficients
 
 # Camphor scores
 cph_fu=Xall$FU.symptom + Xall$FU.qol + Xall$FU.activity
-cph_bl=Xall$BL.Symptom + Xall$FU.QoL + Xall$FU.Activity
+cph_bl=Xall$BL.Symptom + Xall$BL.QoL + Xall$BL.Activity
 
 
 ##**********************************************************************

@@ -1,0 +1,162 @@
+Optimal threshold, contingency table and best accuracy for predictor LR on dataset NONINV for outcome 5M at time 1826 
+
+Value of optimal threshold: 0.44
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         403       147   550
+Yes         75       121   196
+Total      478       268   746
+
+
+Sensitivity: 0.617 (95% CI [0.545,0.685])
+
+Specificity: 0.733 (95% CI [0.693,0.769])
+
+Accuracy: 0.702 (95% CI [0.668,0.735])
+
+
+Optimal threshold, contingency table and best accuracy for predictor LR on dataset PREOP for outcome 5M at time 1826 
+
+Value of optimal threshold: 0.475
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         403       147   550
+Yes         78       118   196
+Total      481       265   746
+
+
+Sensitivity: 0.602 (95% CI [0.53,0.67])
+
+Specificity: 0.733 (95% CI [0.693,0.769])
+
+Accuracy: 0.698 (95% CI [0.664,0.731])
+
+
+Optimal threshold, contingency table and best accuracy for predictor LR on dataset DISCHARGE for outcome 5M at time 1826 
+
+Value of optimal threshold: 0.158
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         310       240   550
+Yes         50       146   196
+Total      360       386   746
+
+
+Sensitivity: 0.745 (95% CI [0.677,0.803])
+
+Specificity: 0.564 (95% CI [0.521,0.605])
+
+Accuracy: 0.611 (95% CI [0.575,0.646])
+
+
+Optimal threshold, contingency table and best accuracy for predictor Lasso on dataset NONINV for outcome 5M at time 1826 
+
+Value of optimal threshold: 2.84
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         425       125   550
+Yes         83       113   196
+Total      508       238   746
+
+
+Sensitivity: 0.577 (95% CI [0.504,0.646])
+
+Specificity: 0.773 (95% CI [0.735,0.807])
+
+Accuracy: 0.721 (95% CI [0.687,0.753])
+
+
+Optimal threshold, contingency table and best accuracy for predictor Lasso on dataset PREOP for outcome 5M at time 1826 
+
+Value of optimal threshold: 2.7
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         409       141   550
+Yes         72       124   196
+Total      481       265   746
+
+
+Sensitivity: 0.633 (95% CI [0.561,0.699])
+
+Specificity: 0.744 (95% CI [0.705,0.779])
+
+Accuracy: 0.714 (95% CI [0.68,0.746])
+
+
+Optimal threshold, contingency table and best accuracy for predictor Lasso on dataset DISCHARGE for outcome 5M at time 1826 
+
+Value of optimal threshold: 2.7
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         309       241   550
+Yes         41       155   196
+Total      350       396   746
+
+
+Sensitivity: 0.791 (95% CI [0.726,0.844])
+
+Specificity: 0.562 (95% CI [0.519,0.604])
+
+Accuracy: 0.622 (95% CI [0.586,0.657])
+
+
+Optimal threshold, contingency table and best accuracy for predictor RF on dataset NONINV for outcome 5M at time 1826 
+
+Value of optimal threshold: 14.2
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         322       228   550
+Yes         41       155   196
+Total      363       383   746
+
+
+Sensitivity: 0.791 (95% CI [0.726,0.844])
+
+Specificity: 0.585 (95% CI [0.543,0.627])
+
+Accuracy: 0.639 (95% CI [0.604,0.674])
+
+
+Optimal threshold, contingency table and best accuracy for predictor RF on dataset PREOP for outcome 5M at time 1826 
+
+Value of optimal threshold: 14
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         311       239   550
+Yes         37       159   196
+Total      348       398   746
+
+
+Sensitivity: 0.811 (95% CI [0.748,0.862])
+
+Specificity: 0.565 (95% CI [0.523,0.607])
+
+Accuracy: 0.63 (95% CI [0.594,0.665])
+
+
+Optimal threshold, contingency table and best accuracy for predictor RF on dataset DISCHARGE for outcome 5M at time 1826 
+
+Value of optimal threshold: 18.9
+
+Contingency table: 
+      Pred. no Pred. yes Total
+No         401       149   550
+Yes         59       137   196
+Total      460       286   746
+
+
+Sensitivity: 0.699 (95% CI [0.629,0.761])
+
+Specificity: 0.729 (95% CI [0.69,0.765])
+
+Accuracy: 0.721 (95% CI [0.687,0.753])
+
+

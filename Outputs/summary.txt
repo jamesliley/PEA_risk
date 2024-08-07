@@ -28,10 +28,10 @@
 
  Overall assessment of fit: 
 
-    pm_noninv      pm_preop  pm_discharge        pm_all    x5m_noninv     x5m_preop x5m_discharge 
- 7.285104e-15  4.695507e-14  3.163485e-18  1.739187e-25  1.382231e-18  1.803324e-17  2.765453e-22 
-      x5m_all     dq_noninv      dq_preop  dq_discharge        dq_all 
- 1.011979e-25  2.246709e-43  3.416846e-43  6.101514e-47  9.702057e-87 
+    pm_noninv      pm_preop  pm_discharge        pm_all    x5m_noninv     x5m_preop x5m_discharge       x5m_all 
+ 7.285104e-15  4.695507e-14  3.163485e-18  1.739187e-25  1.382231e-18  1.803324e-17  2.765453e-22  1.011979e-25 
+    dq_noninv      dq_preop  dq_discharge        dq_all 
+ 2.246709e-43  3.416846e-43  6.101514e-47  9.702057e-87 
 
 
  Top 10 variables (DM):

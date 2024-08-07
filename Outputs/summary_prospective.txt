@@ -1,11 +1,18 @@
 
 
+
+[1] "A sample size of 145 is sufficient to have 90% power to reject the null hypothesis that prediction of YDM from the discovery dataset is no better than random, assuming that individuals in a prospective validation sample had identical distributions of covariates"
+
+
+
+
+
  Wilcoxon rank-sum test comparing model-derived predictions for individuals who died post-PEA with predictions for individuals who did not
 
 	Wilcoxon rank sum test with continuity correction
 
 data:  Ypv[which(Yv == 1)] and Ypv[which(Yv == 0)]
-W = 4365, p-value = 0.003869
+W = 5684.5, p-value = 0.002416
 alternative hypothesis: true location shift is not equal to 0
 
 
@@ -15,7 +22,7 @@ alternative hypothesis: true location shift is not equal to 0
 	Wilcoxon rank sum test with continuity correction
 
 data:  Yc[which(Yv == 1)] and Yc[which(Yv == 0)]
-W = 3397, p-value = 0.3029
+W = 4729, p-value = 0.1133
 alternative hypothesis: true location shift is not equal to 0
 
 
@@ -25,11 +32,46 @@ alternative hypothesis: true location shift is not equal to 0
 	DeLong's test for two correlated ROC curves
 
 data:  rv and rvc
-Z = 2.0514, p-value = 0.04023
+Z = 1.6518, p-value = 0.09857
 alternative hypothesis: true difference in AUC is not equal to 0
 95 percent confidence interval:
- 0.007182434 0.315161889
+ -0.02212745  0.25934195
 sample estimates:
 AUC of roc1 AUC of roc2 
-  0.7267732   0.5656011 
+  0.7056231   0.5870159 
+
+
+
+ Concordance for model prediction on prospective data: 0.653 (0.593,0.714); p-value: ≤4e-05
+
+ Concordance for surgical prediction on prospective data: 0.653 (0.593,0.714); p-value: ≤0.002
+
+ Wilcoxon rank-sum test comparing model-derived predictions for individuals who died <1y post-PEA with predictions for individuals who did not (excluding individuals censored after <1y)
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  Ypvs[which(Yv5t > tx)] and Ypvs[which(Yv5t < tx & Yv5 == 1)]
+W = 2523, p-value = 0.0001707
+alternative hypothesis: true location shift is not equal to 0
+
+
+
+ Wilcoxon rank-sum test comparing surgeon-estimated predictions for individuals who died <1y post-PEA with predictions for individuals who did not (excluding individuals censored after <1y)
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  Yc[which(Yv5t > tx)] and Yc[which(Yv5t < tx & Yv5 == 1)]
+W = 2838.5, p-value = 0.0006879
+alternative hypothesis: true location shift is not equal to 0
+
+
+
+ Permutation test comparing area-under-ROC curve using model-derived predictions and using surgeon-derived predictions
+Bootstrap test for comparison of two survival ROC curves (two-sided)
+
+Time: 1826
+
+Number of trials: 1000
+
+P-value: 0.022
 

@@ -20,7 +20,9 @@ outdir="Outputs/"
 ## Read raw data and pre-format (validation)                        ####
 ##**********************************************************************
 
-prospective_file=paste0(datadir,"Original/Prospective/pea_prospective_final_anon.csv")
+#prospective_file=paste0(datadir,"Original/Prospective/pea_prospective_final_anon.csv")
+#prospective_file=paste0(datadir,"Original/Prospective/pea_prospective_final_mortalityupdate_anon.csv")
+prospective_file=paste0(datadir,"Original/Prospective/pea_prospective_update_anon.csv")
 vtab=read.csv(prospective_file,sep=",",stringsAsFactors=FALSE) # raw data
 
 
@@ -155,8 +157,6 @@ for (v in 1:length(recode_yn))
   vtab[[recode_yn[v]]]=suppressWarnings(as.numeric(vtab[[recode_yn[v]]] %in% c("y","Y")))
 for (v in 1:length(to_numeric)) 
   vtab[[to_numeric[v]]]=suppressWarnings(as.numeric(vtab[[to_numeric[v]]]))
-
-
 
 ##**********************************************************************
 ## Save table                                                       ####
