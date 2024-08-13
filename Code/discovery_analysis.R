@@ -1151,6 +1151,35 @@ dev.off()
 
 
 ##**********************************************************************
+## Write EUROSCORE resuts                                           ####
+##**********************************************************************
+
+sink(paste0("Outputs/Tables/",prefix,"euroscore_summary.txt"))
+
+roc_DM=conc(YDM,euroscore)
+rdm=roc_DM$concordance
+rdmci=rdm + c(1,-1)*qnorm(0.05/2)*roc_DM$se
+cat(paste0("AUROC for EUROSCORE on outcome 90DM: ",
+    signif(rdm,digits=3)," (",signif(rdmci[1],digits=3),
+    ",",signif(rdmci[2],digits=3),")\n\n\n"))
+
+roc_5M=concordance(Surv(Yt,Y)~ex)
+r5m=1-roc_5M$concordance
+r5mci=r5m + c(1,-1)*qnorm(0.05/2)*sqrt(roc_5M$var)
+cat(paste0("AUROC for EUROSCORE on outcome 5YM: ",
+    signif(r5m,digits=3)," (",signif(r5mci[1],digits=3),
+    ",",signif(r5mci[2],digits=3),")\n\n\n"))
+
+roc_DC=conc(YDC>0,euroscore)
+rcm=roc_DC$concordance
+rcmci=rcm + c(1,-1)*qnorm(0.05/2)*roc_DC$se
+cat(paste0("AUROC for EUROSCORE on outcome DC: ",
+           signif(rcm,digits=3)," (",signif(rcmci[1],digits=3),
+           ",",signif(rcmci[2],digits=3),")\n\n\n"))
+
+sink()
+
+##**********************************************************************
 ## Restore output file                                              ####
 ##**********************************************************************
 

@@ -195,10 +195,10 @@ if (!file.exists(prs_file)) {
   pts=iid[ww]
   
   # Read GRS coefficients
-  afib=read.table("Reference/PRS/afib.txt",skip=10,stringsAs=F,header=T)
-  cad=read.table("Reference/PRS/cad.txt",skip=10,stringsAs=F,header=T)
-  t2d=read.table("Reference/PRS/t2d.txt",skip=10,stringsAs=F,header=T)
-  ibd=read.table("Reference/PRS/ibd.txt",skip=10,stringsAs=F,header=T)
+  afib=read.table(paste0(datadir,"PRS/afib.txt"),skip=10,stringsAs=F,header=T)
+  cad=read.table(paste0(datadir,"PRS/cad.txt"),skip=10,stringsAs=F,header=T)
+  t2d=read.table(paste0(datadir,"PRS/t2d.txt"),skip=10,stringsAs=F,header=T)
+  ibd=read.table(paste0(datadir,"PRS/ibd.txt"),skip=10,stringsAs=F,header=T)
   
   # Indices for GRS coefficients
   afib_id=paste0(afib$chr,":",afib$position); rownames(afib)=afib_id

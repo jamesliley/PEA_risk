@@ -44,7 +44,7 @@ AUC of roc1 AUC of roc2
 
  Concordance for model prediction on prospective data: 0.653 (0.593,0.714); p-value: ≤4e-05
 
- Concordance for surgical prediction on prospective data: 0.653 (0.593,0.714); p-value: ≤0.002
+ Concordance for surgical prediction on prospective data: 0.653 (0.593,0.714); p-value: ≤0.0312
 
  Wilcoxon rank-sum test comparing model-derived predictions for individuals who died <1y post-PEA with predictions for individuals who did not (excluding individuals censored after <1y)
 

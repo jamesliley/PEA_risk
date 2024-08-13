@@ -709,3 +709,22 @@ roc_test_surv=function(v1,v2,s1,s2,time) {
   cat(paste0("P-value: ",signif(pval,digits=3),"\n\n"))
   return(invisible(pval))
 }
+
+
+
+
+##' Basic concordance
+##' @name conc
+##' @param y target
+##' @param yp prediction
+##' @return list of two values: concordance and SE
+conc=function(y,yp) {
+  s1=which(y==1); s0=which(y==0)
+  n=length(y)
+  tot=0
+  for (i in 1:length(s1)) tot=tot + length(which(yp[s1[i]]>yp[s0]))
+  denom=length(s1)*length(s0)
+  xconc=tot/denom;
+  concse=sqrt(xconc*(1-xconc)/denom)
+  return(list(concordance=xconc,se=concse))
+}
