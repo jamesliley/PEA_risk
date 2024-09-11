@@ -1,9 +1,9 @@
-AUROC for EUROSCORE on outcome 90DM: 0.652 (0.65,0.655)
+AUROC for EUROSCORE on outcome 90DM: 0.652 (0.59,0.715)
 
 
 AUROC for EUROSCORE on outcome 5YM: 0.667 (0.631,0.704)
 
 
-AUROC for EUROSCORE on outcome DC: 0.496 (0.494,0.498)
+AUROC for EUROSCORE on outcome DC: 0.496 (0.455,0.537)
 
 

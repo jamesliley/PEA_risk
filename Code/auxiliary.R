@@ -725,6 +725,6 @@ conc=function(y,yp) {
   for (i in 1:length(s1)) tot=tot + length(which(yp[s1[i]]>yp[s0]))
   denom=length(s1)*length(s0)
   xconc=tot/denom;
-  concse=sqrt(xconc*(1-xconc)/denom)
+  concse=aucse(length(s1),length(s0),xconc)
   return(list(concordance=xconc,se=concse))
 }
