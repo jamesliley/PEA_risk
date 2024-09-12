@@ -33,20 +33,20 @@ Xp=Xall[,intersect(colnames(Xall),preop_predictors)]
 
 
 # Mean, best 20%, worst 20% survival 
-# Preliminaries
 survfit=predict(mod_5m_preop,Xp)
-survint=rowSums(survfit$survival)
-i_median=which.min(abs(survint-median(survint)))
-i_20=which.min(abs(survint-quantile(survint,0.2)))
-i_80=which.min(abs(survint-quantile(survint,0.8)))
-
 survtime=survfit$time.interest
-survmean=survfit$survival[i_median,]
-surv20=survfit$survival[i_20,]
-surv80=survfit$survival[i_80,]
+survmean=colMedians(survfit$survival) 
+surv20=apply(survfit$survival,2,function(x) quantile(x,0.2)) 
+surv80=apply(survfit$survival,2,function(x) quantile(x,0.8)) 
 
-# Mean value of all variables
-mtab=colMeans(Xp)
+# 'Typical' patient; this is not necessarily median (who is healthier than typical) or mean (who is less healthy). 
+dm=rowSums((survfit$survival-survmean)^2)
+ix=order(dm)[1:10]
+set.seed(543643) # This is not from key-pounding - it was searched for to generate a hypothetical patient whose survival profile matched the median.
+ttab=apply(Xp[ix,],2,function(x) sample(x,1))
+
+# Mean values
+mtab=colMeans(Xp,na.rm=T)
 
 # Logistic regression coefficients
 cx=coxph(Surv(time=Y5M_time,event=Y5M)~.,data=Xp)
@@ -62,7 +62,7 @@ cph_bl=Xall$BL.Symptom + Xall$BL.QoL + Xall$BL.Activity
 ##**********************************************************************
 
 shiny_data=paste0("../../Shiny/data.RData")
-save(mtab,survtime,survmean,surv20,surv80,mod_dm_preop,mod_5m_preop,mod_dq_preop,
+save(mtab,ttab,survtime,survmean,surv20,surv80,mod_dm_preop,mod_5m_preop,mod_dq_preop,
      lr_coefficients,cph_fu,cph_bl,file=shiny_data)
 
 
