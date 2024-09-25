@@ -31,7 +31,7 @@ source("Code/auxiliary.R") # Auxiliary functions
 ##**********************************************************************
 
 # Main dataset
-tab=read.csv(paste0(datadir,"Original/Discovery/LHDmaster17.04.19.csv"),sep=",",stringsAsFactors=FALSE) # raw data
+tab=read.csv(paste0(datadir,"Original/Discovery/LHDmaster.csv"),sep=",",stringsAsFactors=FALSE) # raw data
 
 # US data
 t2=read.table(paste0(datadir,"Original/Discovery/PEA_echos_james.csv"),header=T,stringsAs=F,sep=",")
@@ -64,11 +64,20 @@ tab_raw=tab
 tab$sex=as.numeric(tab$sex=="M")
 tab[,"comorbid_other"]=as.numeric(!is.na(tab[,"comorbid_other"]))
 cmty=c("cabg","pfo","avr","mvr","asd",colnames(tab)[grep("comorbid",colnames(tab))])
+cmty=setdiff(cmty,"comorbid_haem_group.x")
 tab[,cmty]=as.numeric(tab[,cmty]=="y"|tab[,cmty]=="Y")
 tab$smoking_status=4-as.numeric(as.factor(tab$smoking_status))
 tab$comp_reperfusion=(tab$comp_reperfusion=="yes")
 tab$death_in_hosp=(tab$death_in_hosp=="Y")
 tab$la_bl_dilated=(tab$la_bl_dilated!="normal")
+cmr=rep(NA,dim(tab)[1]); cmr[which(tab$renal_failure=="No")]=0; cmr[which(tab$renal_failure=="Yes")]=1
+tab$comorbid_renal=cmr
+tab$comorbid_thrombophilia=(tab$comorbid_haem_group.x %in% c("Thrombophilia","Thrombophilia + Myeloproliferative"))
+tab$ecmo=(tab$ecmo=="Yes")
+tab$cpap=(tab$cpap=="Yes")
+tab$chest_infection=(tab$chest_infection=="Yes")
+tab$renal_cvvd=(tab$renal_cvvd=="Yes")
+tab$return_theatre=(tab$return_theatre=="Yes")
 
 abl=c("ra_area_bl","ra_area_fu1","la_4c_area_bl","la_4c_area_fu1"); 
 vbl=c("ra_vol_bl","ra_vol_fu1","la_4c_vol_bl","la_4c_vol_fu1")

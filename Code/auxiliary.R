@@ -728,3 +728,358 @@ conc=function(y,yp) {
   concse=aucse(length(s1),length(s0),xconc)
   return(list(concordance=xconc,se=concse))
 }
+
+
+##' Auxiliary function to generate table 1
+##' @param tab data frame which should contain all fields.
+make_tab1=function(tab) {
+  
+  # Auxiliary functions
+  miqr=function(x,dg=0) {
+    if (dg==0) out=paste0(round(median(x,na.rm=T))," ± ",
+                          round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T))/2))
+    if (dg>0) out=paste0(round(median(x,na.rm=T),digits=dg)," ± ",
+                         round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T))/2,digits=dg))
+    return(out)
+  }
+  nperc=function(x) {
+    paste0(sum(x,na.rm=T)," (",
+           round(mean(100*x,na.rm=T)),")")
+  }
+  pform=function(x,y) {
+    x1=x[which(is.finite(x))]
+    y1=y[which(is.finite(y))]
+    p=t.test(x1,y1)$p.value
+    if (p<0.001) out="<0.001" else out=as.character(signif(p,digits=2))
+  }
+  
+  
+  tab1=c()
+  
+  # Total n
+  rx=c("Total n",  
+       dim(tab)[1],  
+       "",   
+       length(which(tab$Dead_before_followup==0)),
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Age at PEA
+  rx=c("Age at PEA, yrs",
+       length(which(is.finite(tab$age_pea))),
+       miqr(tab$age_pea),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Male sex
+  rx=c("Male sex, n (%)",
+       length(which(!is.na(tab$sex))),
+       nperc(tab$sex),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # BMI
+  rx=c("BMI, kg/m²",
+       length(which(!is.na(tab$BMI))),
+       miqr(tab$BMI),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # FEV1/FVC
+  rx=c("FEV1/FVC, %",
+       length(which(!is.na(tab$pft_bl_fev1.fvc_pc))),
+       miqr(tab$pft_bl_fev1.fvc_pc),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Smoker
+  rx=c("Smoker*, n (%)",
+       length(which(!is.na(tab$smoking_status))),
+       nperc(tab$smoking_status>1),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Comorbidities
+  tab1=rbind(tab1,c("Comorbidities, n (%)","","","","",""))
+  rx=c("   Atrial arrhythmia",
+       length(which(!is.na(tab$comorbid_af))),
+       nperc(tab$comorbid_af),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Systemic hypertension",
+       length(which(!is.na(tab$comorbid_htn))),
+       nperc(tab$comorbid_htn),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Diabetes Mellitis",
+       length(which(!is.na(tab$comorbid_dm))),
+       nperc(tab$comorbid_dm),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Chronic renal disease", 
+       length(which(!is.na(tab$comorbid_renal))),
+       nperc(tab$comorbid_renal),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Ischaemic heart disease†",
+       length(which(!is.na(tab$comorbid_ihd))),
+       nperc(tab$comorbid_ihd),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   History of malignancy",
+       length(which(!is.na(tab$comorbid_malig_solid_haem))),
+       nperc(tab$comorbid_malig_solid_haem),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Thrombophilia",  
+       length(which(!is.na(tab$comorbid_thrombophilia))),
+       nperc(tab$comorbid_thrombophilia),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Thyroid dysfunction",
+       length(which(!is.na(tab$comorbid_thyroid))),
+       nperc(tab$comorbid_thyroid),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Vasodilators
+  rx=c("Pulmonary vasodilator, n (%)",
+       length(which(!is.na(tab$med_vasodilator))),
+       nperc(tab$med_vasodilator),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Haemodynamics
+  tab1=rbind(tab1,c("Haemodynamics","","","","",""))
+  rx=c("   Mean PAP, mmHg",
+       length(which(!is.na(tab$mpap_bl))),
+       miqr(tab$mpap_bl),
+       length(which(!is.na(tab$mpap_fu1))),
+       miqr(tab$mpap_fu1),
+       pform(tab$mpap_bl,tab$mpap_fu1))
+  tab1=rbind(tab1,rx)
+  rx=c("   PVR, dynes cm s-5",
+       length(which(!is.na(tab$pvr_bl))),
+       miqr(tab$pvr_bl),
+       length(which(!is.na(tab$pvr_fu1))),
+       miqr(tab$pvr_fu1),
+       pform(tab$pvr_bl,tab$pvr_fu1))
+  tab1=rbind(tab1,rx)
+  rx=c("   PAWP, mmHg",
+       length(which(!is.na(tab$pcwp_bl))),
+       miqr(tab$pcwp_bl),
+       length(which(!is.na(tab$pcwp_fu1))),
+       miqr(tab$pcwp_fu1),
+       pform(tab$pcwp_bl,tab$pcwp_fu1))
+  tab1=rbind(tab1,rx)
+  rx=c("   CI, l/min/m²",
+       length(which(!is.na(tab$ci_bl))),
+       miqr(tab$ci_bl,dg=1),
+       length(which(!is.na(tab$ci_fu1))),
+       miqr(tab$ci_fu1,dg=1),
+       pform(tab$ci_bl,tab$ci_fu1))
+  tab1=rbind(tab1,rx)
+  
+  
+  
+  # Functional status
+  tab1=rbind(tab1,c("Functional status","","","","",""))
+  rx=c("   NYHA, 1/2/3/4 %",
+       length(which(!is.na(tab$nyha_bl))),
+       miqr(tab$nyha_bl),
+       length(which(!is.na(tab$nyha_fu1))),
+       miqr(tab$nyha_fu1),
+       pform(tab$nyha_bl,tab$nyha_fu1))
+  tab1=rbind(tab1,rx)
+  rx=c("   6MWD ‡, metres",
+       length(which(!is.na(tab$sixmwt_bl))),
+       miqr(tab$sixmwt_bl),
+       length(which(!is.na(tab$sixmwt_fu1))),
+       miqr(tab$sixmwt_fu1),
+       pform(tab$sixmwt_bl,tab$sixmwt_fu1))
+  tab1=rbind(tab1,rx)
+  
+  # CAMPHOR
+  tab1=rbind(tab1,c("CAMPHOR","","","","",""))
+  rx=c("   Symptoms",
+       length(which(!is.na(tab$BL.Symptom))),
+       miqr(tab$BL.Symptom),
+       length(which(!is.na(tab$FU.symptom))),
+       miqr(tab$FU.symptom),
+       pform(tab$BL.Symptom,tab$FU.symptom))
+  tab1=rbind(tab1,rx)
+  rx=c("   Activity",
+       length(which(!is.na(tab$BL.Activity))),
+       miqr(tab$BL.Activity),
+       length(which(!is.na(tab$FU.activity))),
+       miqr(tab$FU.activity),
+       pform(tab$BL.Activity,tab$FU.activity))
+  tab1=rbind(tab1,rx)
+  rx=c("   Quality of Life",
+       length(which(!is.na(tab$BL.QoL))),
+       miqr(tab$BL.QoL),
+       length(which(!is.na(tab$FU.qol))),
+       miqr(tab$FU.qol),
+       pform(tab$BL.QoL,tab$FU.qol))
+  tab1=rbind(tab1,rx)
+  
+  # Intra-op
+  tab1=rbind(tab1,c("Intra-operative","","","","",""))
+  rx=c("   CPB time, mins",
+       length(which(!is.na(tab$bypass_mins))),
+       miqr(tab$bypass_mins),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   DHCA time, mins",
+       length(which(!is.na(tab$dhca_min_total))),
+       miqr(tab$dhca_min_total),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Other surgery
+  tab1=rbind(tab1,c("Other surgery, n (%)","","","","",""))
+  rx=c("   CABG",
+       length(which(!is.na(tab$cabg))),
+       nperc(tab$cabg),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   AVR",
+       length(which(!is.na(tab$avr))),
+       nperc(tab$avr),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   MVR",
+       length(which(!is.na(tab$mvr))),
+       nperc(tab$mvr),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   ASD/PFO closure",
+       length(which(!is.na(tab$asd))),
+       nperc(tab$asd),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Complications
+  tab1=rbind(tab1,c("Complications, n (%)","","","","",""))
+  rx=c("   CPAP",
+       length(which(!is.na(tab$cpap))),
+       nperc(tab$cpap),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Haemofiltration",
+       length(which(!is.na(tab$renal_cvvd))),
+       nperc(tab$renal_cvvd),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   ECMO",
+       length(which(!is.na(tab$ecmo))),
+       nperc(tab$ecmo),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Pneumonia",
+       length(which(!is.na(tab$chest_infection))),
+       nperc(tab$chest_infection),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Return to theatre",
+       length(which(!is.na(tab$return_theatre))),
+       nperc(tab$return_theatre),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  rx=c("   Reperfusion injury",
+       length(which(!is.na(tab$comp_reperfusion))),
+       nperc(tab$comp_reperfusion),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Intubation
+  rx=c("Intubation, days",
+       length(which(!is.na(tab$time_to_extubation))),
+       nperc(tab$time_to_extubation),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # ICU stay
+  rx=c("ICU stay, days",
+       length(which(!is.na(tab$icu_days))),
+       miqr(tab$icu_days),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Total inpatient stay
+  rx=c("Total inpatient stay, days",
+       length(which(!is.na(tab$hosp_days))),
+       miqr(tab$hosp_days),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  # Inpatient death
+  rx=c("Inpatient death, n (%)",
+       length(which(!is.na(tab$death_in_hosp))),
+       nperc(tab$death_in_hosp),
+       "",
+       "",
+       "")
+  tab1=rbind(tab1,rx)
+  
+  return(tab1)
+}

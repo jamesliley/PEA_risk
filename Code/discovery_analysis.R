@@ -72,8 +72,6 @@ if (write_to_file) {
 }
 
 
-
-
 ##**********************************************************************
 ## 1. FIT MODELS TO DISCOVERY DATASET                               ####
 ## Read data                                                        ####
@@ -103,6 +101,9 @@ e1=which(tab$excluded==1)
 e2=which(tab$mpap_bl<25)
 e3=which(!is.finite(tab$HospNo))
 
+# Total
+cat(paste("Total PEAs in dataset:", dim(tab)[1]))
+
 # Excluded because of mpap<25 mmHg at baseline
 cat("\n\n",paste("Excluded due to mPap<25 mmHg at baseline:", length(e2)))
 
@@ -117,7 +118,20 @@ exclude=unique(c(e1,e2,e3))
 tab=tab[-exclude,]
 tab_raw=tab_raw[-exclude,]
 
-## Variable exclusions:
+
+##**********************************************************************
+## Descriptive table                                                ####
+##**********************************************************************
+
+if (!low_missingness) {
+  tab1=make_tab1(tab)
+  write.csv(tab1,file=paste0(outdir,"Tables/main_description_table.csv"),
+            row.names=FALSE,col.names=FALSE)
+}
+
+##**********************************************************************
+## Variable exclusions                                              ####
+##**********************************************************************
 
 var_exclude=c(); thresh=0.1*dim(tab)[1]
 for (i in 1:dim(tab)[2]) if (length(which(!is.na(tab[,i])))<thresh) var_exclude=c(var_exclude,colnames(tab)[i])
@@ -137,21 +151,32 @@ cat("\n\n",paste("Deaths within 5y:", sum(tab$surv_days_max5yrs_census,na.rm=T))
 cat("\n\n",paste("Survived 5y:", length(which(tab$surv_days_max5yrs>= 1826 & tab$surv_days_max5yrs_census==0))))
 cat("\n\n",paste("Censored before 5y:", length(which(tab$surv_days_max5yrs < 1826 & tab$surv_days_max5yrs_census==0))))
 
+for (nyear in c(1,3,5)) {
+  xtot=length(which((tab$surv_days_max5yrs >= 365*nyear) | (tab$surv_days_max5yrs_census==1)))
+  xmort=length(which((tab$surv_days_max5yrs < 365*nyear) & (tab$surv_days_max5yrs_census==1)))
+  cat("\n\n",paste("Cohort survival at ",nyear,"y:", 1-xmort/xtot))
+}
+
+
 # Morbidity
-cat("\n\n",paste("CAMPHOR available at baseline:", length(which(is.finite(tab$BL.Symptom+tab$BL.Activity+tab$BL.QoL)))))
-cat("\n\n",paste("CAMPHOR available at followup:", length(which(is.finite(tab$FU.symptom+tab$FU.activity+tab$FU.qol)))))
-cat("\n\n",paste("Mean CAMPHOR at baseline:", mean(tab$BL.Symptom+tab$BL.Activity+tab$BL.QoL,na.rm=T),
-            "(",mean(tab$BL.Symptom,na.rm=T),mean(tab$BL.Activity,na.rm=T),
-            mean(tab$BL.QoL,na.rm=T),")"))
-cat("\n\n",paste("Mean CAMPHOR at followup:", mean(tab$FU.symptom+tab$FU.activity+tab$FU.qol,na.rm=T),
-            "(",mean(tab$FU.symptom,na.rm=T),mean(tab$FU.activity,na.rm=T),
-            mean(tab$FU.qol,na.rm=T),")"))
+cbl=cbind(tab$BL.Symptom,tab$BL.Activity,tab$BL.QoL); ctbl=rowSums(cbl)
+cfu=cbind(tab$FU.symptom,tab$FU.activity,tab$FU.qol); ctfu=rowSums(cfu)
+wbl=which(is.finite(ctbl))
+wfu=which(is.finite(ctfu))
+wboth=intersect(wbl,wfu)
+
+cat("\n\n",paste("CAMPHOR available at baseline:", length(wbl)))
+cat("\n\n",paste("CAMPHOR available at baseline and followup:",length(wboth)))
+
+cat("\n\n",paste("Mean CAMPHOR at baseline:", mean(ctbl[wbl]),
+            "(",mean(cbl[wbl,1]),mean(cbl[wbl,2]),mean(cbl[wbl,3]),")"))
+cat("\n\n",paste("Mean CAMPHOR at followup:", mean(ctfu[wfu]),
+                 "(",mean(cfu[wfu,1]),mean(cfu[wfu,2]),mean(cfu[wfu,3]),")"))
+
 cat("\n\n",paste("Patients with CAMPHOR at baseline but not FU, survived to FU:",
-            length(which(!is.na(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL) & is.na(tab$FU.activity  + tab$FU.symptom + tab$FU.qol) & !(tab$Dead_before_followup>0)))))
-cat("\n\n",paste("Patients with CAMPHOR at baseline but not FU, did not survive to FU:",
-            length(which(!is.na(tab$BL.Activity + tab$BL.Symptom + tab$BL.QoL) & is.na(tab$FU.activity  + tab$FU.symptom + tab$FU.qol) & (tab$Dead_before_followup>0)))))
-
-
+            length(which(tab$Dead_before_followup[setdiff(wbl,wfu)]>0))))
+cat("\n\n",paste("Patients with CAMPHOR at baseline but not FU, survived to FU:",
+                 length(which(tab$Dead_before_followup[setdiff(wbl,wfu)]==0))))
 
 
 ##**********************************************************************

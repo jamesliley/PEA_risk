@@ -1,4 +1,4 @@
-
+Total PEAs in dataset: 1509
 
  Excluded due to mPap<25 mmHg at baseline: 84
 
@@ -14,17 +14,23 @@
 
  Censored before 5y: 588
 
+ Cohort survival at  1 y: 0.915690866510539
+
+ Cohort survival at  3 y: 0.845918367346939
+
+ Cohort survival at  5 y: 0.737265415549598
+
  CAMPHOR available at baseline: 1245
 
- CAMPHOR available at followup: 990
+ CAMPHOR available at baseline and followup: 966
 
  Mean CAMPHOR at baseline: 34.2722891566265 ( 12.455421686747 11.2771084337349 10.5397590361446 )
 
  Mean CAMPHOR at followup: 20.1474747474747 ( 6.17373737373737 7.54444444444444 6.42929292929293 )
 
- Patients with CAMPHOR at baseline but not FU, survived to FU: 195
+ Patients with CAMPHOR at baseline but not FU, survived to FU: 84
 
- Patients with CAMPHOR at baseline but not FU, did not survive to FU: 84
+ Patients with CAMPHOR at baseline but not FU, survived to FU: 195
 
  Overall assessment of fit: 
 
