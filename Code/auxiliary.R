@@ -335,10 +335,10 @@ trapz=function(x,y) {
 
 
 # Format output of ci.cvAUC
-formatci=function(cc,digits=3) 
+formatci=function(cc,digits=2) 
  paste0(signif(cc$cvAUC,digits=digits)," (",
- signif(cc$ci[1],digits=digits),",",
- signif(cc$ci[2],digits=digits),")")
+ signif(min(cc$ci),digits=digits),",",
+ signif(max(cc$ci),digits=digits),")")
 
 
 

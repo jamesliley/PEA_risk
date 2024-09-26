@@ -268,6 +268,15 @@ auc_surg=rvc$auc
 se_surg=aucse(sum(Yv),sum(1-Yv),rvc$auc)
 ci_surg=auc_surg - qnorm(0.05/2)*se_surg*c(-1,1)
 
+cat("\n\n",paste0("AUROC for model prediction of short-term mortality on prospective data: ",
+                  signif(auc_mod,digits=3),
+                  " (",signif(ci_mod[1],digits=3),",",signif(ci_mod[2],digits=3)))
+
+cat("\n\n",paste0("AUROC for surgical prediction of short-term mortality on prospective data: ",
+                  signif(auc_surg,digits=3),
+                  " (",signif(ci_surg[1],digits=3),",",signif(ci_surg[2],digits=3)))
+
+
 
 ##**********************************************************************
 ## Plot ROC and calibration curves (DM)                             ####
@@ -367,7 +376,7 @@ cat("\n\n",paste0("Concordance for model prediction on prospective data: ",signi
     "); p-value: ≤",signif(p_mod_concordance,digits=3)))
 
 
-surg_concordance=(concordance(Surv(Yv5t,Yv5)~Ypvs)) # or 1-survConcordance(Surv(Yv5t,Yv5)~Ypvs)$concordance
+surg_concordance=(concordance(Surv(Yv5t,Yv5)~Yc)) # or 1-survConcordance(Surv(Yv5t,Yv5)~Ypvs)$concordance
 mc=1-surg_concordance$concordance; vc=surg_concordance$var
 surg_ci=mc + c(1,-1)*qnorm(0.05/2)*sqrt(vc)
 p_surg_concordance=2*max(c(1/length(cx),min(ecdf(rand_concordance_surg)(c(mc,1-mc)))))

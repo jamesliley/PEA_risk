@@ -52,10 +52,13 @@ mtab=colMeans(Xp,na.rm=T)
 cx=coxph(Surv(time=Y5M_time,event=Y5M)~.,data=Xp)
 lr_coefficients=cx$coefficients
 
-# Camphor scores
-cph_fu=Xall$FU.symptom + Xall$FU.qol + Xall$FU.activity
-cph_bl=Xall$BL.Symptom + Xall$BL.QoL + Xall$BL.Activity
-
+# Camphor scores (remove imputed)
+cph_fu=tab$FU.symptom + tab$FU.qol + tab$FU.activity
+cph_bl=tab$BL.Symptom + tab$BL.QoL + tab$BL.Activity
+cph_bl[which(cph_bl>80)]=NA
+cph_fu[which(cph_fu>80)]=NA
+cph_fu=cph_fu[which(is.finite(cph_fu))]
+cph_bl=cph_bl[which(is.finite(cph_bl))]
 
 ##**********************************************************************
 ## Save outputs                                                     ####

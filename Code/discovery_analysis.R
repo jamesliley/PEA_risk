@@ -252,43 +252,40 @@ if (do_assoc_test) {
   }
   rownames(outstat)=vars
   colnames(outstat)=c("missing","p.pm","t.pm","df.pm","p.5m","lr.5m","df.5m","p.dc","t.dc","df.dc")
-  
+  outstat=as.data.frame(outstat)
   
   # Determine significant values
   fdr=0.1 # FDR control level
   
-  pval=as.vector(outstat[,2:7]); pval=pval[which(!is.na(pval))]
+  pval=as.vector(unlist(outstat[,c("p.pm","p.5m","p.dc")]))
+  pval=pval[which(!is.na(pval))]
   pcut=sort(pval)[max(rank(pval)[which(pval*length(pval)/rank(pval)<fdr)])]
-  
-  outx=outstat[which(rowMins(outstat[,c(2,5,8)])<pcut),]
   
   # Print
   fullnames=read.table("Reference/predictor_details.txt",stringsAs=F,sep=",") # details of predictors
   
-  processnum=function(x,digits=2,sthresh=1e-3,pthresh=pcut) {
-    if (abs(x)<pthresh) suff="$^*$" else suff=""
-    if (abs(x)>sthresh | x==0) line=paste0(signif(x,digits=digits),suff)
-    else line=paste0(formatC(x,format="e",digits=digits),suff)
-    line
-  }
-  printx=function(x,names,digits=2,sthresh=1e-3,pthresh=pcut) {
-    for (i in 1:dim(x)[1]) {
-      xx=x[i,]
-      line0=paste0(fullnames[match(rownames(x)[i],names),2]," & ",signif(xx[1],digits=2))
-      line1=paste0(processnum(xx[2])," & ",processnum(xx[3])," (",round(xx[4]),")")
-      line2=paste0(processnum(xx[5])," & ",processnum(xx[6])) #," (",round(xx[7]),")")
-      line3=paste0(processnum(xx[8])," & ",processnum(xx[9])," (",round(xx[10]),")")
-      line=paste0(line0," & ",line1," & ",line2," & ",line3," \\")
-      line=gsub("e-([0-9][0-9])","$ \times 10^\\{-\\1\\} $",line,fixed=F)
-      line=gsub("\\{-0([0-9])}\\}","\\{-\\1\\} $",line,fixed=F)
-      #   line=gsub("%","\%",fixed=T,line)
-      print(line,quote=F)
-    }
-  } 
-  #printx(outx[order(outx[,2]),],names=fullnames[,1])
   
-  mx=match(rownames(outstat),fullnames[,1])
-  outwrite=cbind(fullnames[mx,3],fullnames[mx,2],outstat)
+  final_outstat=outstat[order(outstat$p.pm)[1:50],]
+  for (xn in colnames(outstat)) {
+    s=final_outstat[[xn]]
+    s2=signif(s,digits=3)
+    
+    if (xn=="missing") s2=round(100*s)
+    
+    if (xn %in% c("df.pm","df.5m","df.dc")) s2=round(s)
+    
+    if (xn %in% c("p.pm","p.5m","p.dc")) {
+      w=which(s<pcut)
+      s2[w]=paste0(s2[w],"*")
+    }
+    
+    final_outstat[[xn]]=s2
+  }
+  
+  
+
+  mx=match(rownames(final_outstat),fullnames[,1])
+  outwrite=cbind(fullnames[mx,3],fullnames[mx,2],final_outstat)
   colnames(outwrite)[1:2]=c("Full_variable_name","Short_variable_name")
   write.csv(outwrite,file=paste0(outdir,"Tables/",prefix,"variable_table.csv"),row.names=F)
 }
@@ -975,21 +972,44 @@ m1=mod_dm_noninv$importance; m1=m1[order(-m1),]
 m2=mod_dm_preop$importance; m2=m2[order(-m2),]
 m3=mod_dm_discharge$importance; m3=m3[order(-m3),]
 m4=mod_dm_all$importance; m4=m4[order(-m4),]
-top10_dm=cbind(names(m1)[1:nn],m1[1:nn],names(m2)[1:nn],m2[1:nn],names(m3)[1:nn],m3[1:nn],names(m4)[1:nn],m4[1:nn])
+top10_dm=data.frame(
+  noninv_var=names(m1)[1:nn],
+  noninv_imp=m1[1:nn],
+  preop_var=names(m2)[1:nn],
+  preop_imp=m2[1:nn],
+  discharge_var=names(m3)[1:nn],
+  discharge_imp=m3[1:nn],
+  all_var=names(m4)[1:nn],
+  all_imp=m4[1:nn])
 
 
 m1=mod_5m_noninv$importance; m1=m1[order(-m1)]
 m2=mod_5m_preop$importance; m2=m2[order(-m2)]
 m3=mod_5m_discharge$importance; m3=m3[order(-m3)]
 m4=mod_5m_all$importance; m4=m4[order(-m4)]
-top10_5m=cbind(names(m1)[1:nn],m1[1:nn],names(m2)[1:nn],m2[1:nn],names(m3)[1:nn],m3[1:nn],names(m4)[1:nn],m4[1:nn])
-
+top10_5m=data.frame(
+  noninv_var=names(m1)[1:nn],
+  noninv_imp=m1[1:nn],
+  preop_var=names(m2)[1:nn],
+  preop_imp=m2[1:nn],
+  discharge_var=names(m3)[1:nn],
+  discharge_imp=m3[1:nn],
+  all_var=names(m4)[1:nn],
+  all_imp=m4[1:nn])
 
 m1=mod_dq_noninv$importance; m1=m1[order(-m1),]
 m2=mod_dq_preop$importance; m2=m2[order(-m2),]
 m3=mod_dq_discharge$importance; m3=m3[order(-m3),]
 m4=mod_dq_all$importance; m4=m4[order(-m4),]
-top10_dc=cbind(names(m1)[1:nn],m1[1:nn],names(m2)[1:nn],m2[1:nn],names(m3)[1:nn],m3[1:nn],names(m4)[1:nn],m4[1:nn])
+top10_dc=data.frame(
+  noninv_var=names(m1)[1:nn],
+  noninv_imp=m1[1:nn],
+  preop_var=names(m2)[1:nn],
+  preop_imp=m2[1:nn],
+  discharge_var=names(m3)[1:nn],
+  discharge_imp=m3[1:nn],
+  all_var=names(m4)[1:nn],
+  all_imp=m4[1:nn])
 
 rownames(top10_dm)=NULL
 rownames(top10_5m)=NULL
@@ -1006,13 +1026,13 @@ for (i in c(1,3,5,7)) {
 }
 
 cat("\n\n","Top 10 variables (DM):\n")
-cat(top10_dm)
+print(top10_dm)
 
 cat("\n\n","Top 10 variables (5M):\n")
-cat(top10_5m)
+print(top10_5m)
 
 cat("\n\n","Top 10 variables (DC):\n")
-cat(top10_dc)
+print(top10_dc)
 
 
 
