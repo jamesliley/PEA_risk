@@ -913,12 +913,16 @@ make_tab1=function(tab) {
   
   # Functional status
   tab1=rbind(tab1,c("Functional status","","","","",""))
+  nbl=table(tab$nyha_bl); nfu=table(tab$nyha_fu)
+  p_nyha=chisq.test(rbind(nbl,nfu))$p.value; 
+  if (p_nyha<0.001) p_nyha="<0.001" else p_nyha=as.character(p_nyha)
   rx=c("   NYHA, 1/2/3/4 %",
        length(which(!is.na(tab$nyha_bl))),
-       miqr(tab$nyha_bl),
+       paste(round(100*nbl/sum(nbl)),collapse="/"),
        length(which(!is.na(tab$nyha_fu1))),
-       miqr(tab$nyha_fu1),
-       pform(tab$nyha_bl,tab$nyha_fu1))
+       paste(round(100*nfu/sum(nfu)),collapse="/"),
+       p_nyha
+       )
   tab1=rbind(tab1,rx)
   rx=c("   6MWD ‡, metres",
        length(which(!is.na(tab$sixmwt_bl))),
