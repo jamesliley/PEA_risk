@@ -737,9 +737,9 @@ make_tab1=function(tab) {
   # Auxiliary functions
   miqr=function(x,dg=0) {
     if (dg==0) out=paste0(round(median(x,na.rm=T))," ± ",
-                          round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T))/2))
+                          round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T))))
     if (dg>0) out=paste0(round(median(x,na.rm=T),digits=dg)," ± ",
-                         round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T))/2,digits=dg))
+                         round((quantile(x,0.75,na.rm=T)-quantile(x,0.25,na.rm=T)),digits=dg))
     return(out)
   }
   nperc=function(x) {
